@@ -37,17 +37,15 @@
                         <div class="row">
                             <h3 class="col-lg-6">Datewise Sales Report</h3>
                             <div class="col-lg-6">
-                            @foreach ($company as $data)
-                                <img class="" src="{{ asset($data->logo) }}" alt="Company Logo"
+                                <img class="" src="{{ asset($company->logo) }}" alt="Company Logo"
                                     style="height: 50px; float: left;">
                                 <address class="col-lg-10" style="float: right;">
-                                    <strong>{{ $data->title }}</strong><br>
-                                    @if ($data->address != null) {{ $data->address }} @endif<br>
-                                    @if ($data->phone != null) Phone : {{ $data->phone }} @endif<br>
-                                    @if ($data->email != null) Email : {{ $data->email }} @endif<br>
-                                    @if ($data->website != null) Website : {{ $data->website }} @endif
+                                    <strong>{{ !empty($company->title) ? $company->title : "" }}</strong><br>
+                                    {{ !empty($company->address) ? "Address : ".$company->address : "" }}<br>
+                                    {{ !empty($company->phone) ? "Phone : ".$company->phone : "" }}<br>
+                                    {{ !empty($company->email) ? "Email : ".$company->email : "" }}<br>
+                                    {{ !empty($company->website) ? "Website : ".$company->website : "" }}
                                 </address>
-                            @endforeach
                             </div>
                         </div>
                     </div>
@@ -61,7 +59,8 @@
                                 <th>Customer</th>
                                 <th class="text-center">Quantity</th>
                                 <th class="text-right">SubTotal (Tk.)</th>
-                                <th class="text-right">Discount (Tk.)</th>
+                                <th class="text-right">Discount</th>
+                                <th class="text-right">Vat ({{ $vat }}%) (Tk.)</th>
                                 <th class="text-right">Payable (Tk.)</th>
                             </tr>
                         </thead>
@@ -70,33 +69,31 @@
                             @foreach ($sales as $data)
                             <tr>
                                 <td>{{ $i++ }}.</td>
-                                <td>{{ $data->date }}</td>
+                                <td>{{ \Carbon\Carbon::parse($data->date)->isoFormat('D/MM/YYYY') }}</td>
                                 <td>{{ $data->sale_no }}</td>
-                                <td>
-                                    @if ($data->customer != null) {{ $data->customer }}
-                                    @else Cash
-                                    @endif
-                                </td>
+                                <td>{{ !empty($sales->customer) ? $sales->customer : "Guest Sale" }}</td>
                                 <td class="text-center">{{ $data->total_qty }}</td>
                                 <td class="text-right">{{ $data->sub_total }}</td>
-                                <td class="text-right">{{ $data->sub_total - $data->payable }}</td>
+                                <td class="text-right">{{ $data->discount }} {{ $data->disc_type == 1 ? '%' : '৳' }}</td>
+                                <td class="text-right">{{ $data->vat }}</td>
                                 <td class="text-right">{{ $data->payable }}</td>
                             </tr>
                             @endforeach
                         </tbody>
                          <tfoot>
                             <tr>
-                                <td class="text-right" colspan="4"><b>Total : </b></td>
-                                <td class="text-center"><b>{{ $tQty }}</b></td>
-                                <td class="text-right"><b>{{ $tSub }}</b></td>
-                                <td class="text-right"><b>{{ $tPay }}</b></td>
-                                <td class="text-right"><b>{{ $tDis }}</b></td>
+                                <th class="text-right" colspan="4">Total : </th>
+                                <th class="text-center">{{ $tQty }}</th>
+                                <th class="text-right">{{ $tSub }}</th>
+                                <th class="text-right">{{ $tDis }}</th>
+                                <th class="text-right">{{ $tVat }}</th>
+                                <th class="text-right">{{ $tPay }}</th>
                             </tr>
                         </tfoot>
                     </table>
                     <div class="navbar-fixed-bottom">
                           <div style="float: left;">
-                                Develop By {{ config('app.url') }}
+                            Developed By https://mahdi.infrequentbd.com
                           </div>
                           <div style="float: right;">
                                 <?php echo "Printing Time: " . date("D, d M Y h:i:s a"); ?>
@@ -113,5 +110,4 @@
     <script type="text/javascript">
         window.addEventListener("load", window.print());
     </script>
-
 @endsection

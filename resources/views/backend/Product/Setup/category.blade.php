@@ -11,10 +11,11 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Category <small>( List )</small></h3>
+                        @can('category_create')
                         <button class="btn btn-primary btn-sm" type="button" style="float:right;"
                             data-toggle="modal" data-target="#add-modal-sm">Add Category
                         </button>
-
+                        @endcan
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped">
@@ -34,14 +35,18 @@
                                     <td>{{ $data->name }}</td>
                                     <td>{{ $data->details }}</td>
                                     <td class="project-actions text-center">
+                                        @can('category_update')
                                         <button type="button" value="{{ $data->id }}"
                                             class="btn btn-primary edIT btn-xs"
                                             data-toggle="modal" data-target="#edit-modal-sm">
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        @endcan
+                                        @can('category_delete')
                                         <button class="btn btn-danger NewDelete btn-xs"
                                             value="{{ $data->id }}"><i class="fas fa-trash-alt"></i>
                                         </button>
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach

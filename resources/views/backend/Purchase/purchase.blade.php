@@ -23,23 +23,30 @@
     </style>
 @endsection
 @section('content')
-<div class="content-wrapper">
-
+<div class="content-wrapper pb-0">
     <section class="content pt-2">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12 col-12">
                 <form id="CartStore">
                     <div class="card">
                         <div class="card-header">
                             <div class="row">
-                                <div class="col-lg-4 row">
-                                    <h5 class="col-lg-12">
-                                        Purchase No. <b class="blink_me05">:</b>
-                                        <small style="color: #0000ff;">{{ $purchase }}</small>
-                                        <input type="hidden" class="purchase_no" value="{{ $purchase }}"/>
-                                    </h5>
+                                <div class="col-lg-3 col-3 col-md-3 col-sm-3">
+                                    <select class="SUPP select2 form-control form-control-sm"
+                                            name="supplier" title="Select Supplier" data-placeholder="Select Supplier">
+                                        <option value="Cash">Cash</option>
+                                        @foreach ($suppliers as $data)
+                                            <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="col-lg-5 row form-group">
+                                <div class="col-1 col-lg-1 col-md-1 col-sm-1">
+                                    <button class="btn btn-primary btn-sm" type="button"
+                                            data-toggle="modal" data-target="#SupplierModal" title="Add Supplier">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="col-lg-5 col-5 col-md-5 col-sm-5 row form-group">
                                     <select class="col-lg-10 select2 bs4 form-control form-control-sm"
                                         data-live-search="true" data-style="btn-primary"
                                         name="addProduct" data-placeholder="Choose Product">
@@ -49,61 +56,14 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <h6 class="col-lg-3 text-right form-inline" style="float: right;">
+                                <h6 class="col-lg-3 col-3 col-md-3 col-sm-3 text-right form-inline">
                                     Total Bill (Tk.) : &nbsp;
                                     <b class="blink_me2 BILL"></b>
                                 </h6>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-3 row">
-                                    <div class="col-lg-10">
-                                        <select class="SUPP select2 form-control form-control-sm"
-                                            name="supplier" title="Select Supplier"
-                                            data-placeholder="Select Supplier">
-                                            <option value="Cash">Cash</option>
-                                            @foreach ($suppliers as $data)
-                                            <option value="{{ $data->id }}">{{ $data->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-primary btn-sm" type="button"
-                                            data-toggle="modal" data-target="#SupplierModal" title="Add Supplier">
-                                            <i class="fas fa-user-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-lg-9 row">
-<!--                                    <div class="col-lg-3 row">
-                                        <label class="col-lg-5 text-right">Mobile :</label>
-                                        <div class="col-lg-7 text-left">
-                                            <div class="MOB"></div>
-                                        </div>
-                                    </div>-->
-                                    <div class="col-lg-4 row">
-                                        <label class="col-lg-5 text-right">Balance :</label>
-                                        <div class="col-lg-7 text-left">
-                                            <div class="BAL"></div>
-                                        </div>
-                                    </div>
-                                    {{-- <div class="col-lg-2">
-                                        <select class="payment_type form-control form-control-sm"
-                                            id="pay_type" title="Payment Type">
-                                            <option value="Cash">Cash</option>
-                                            <option value="Bkash">Bkash</option>
-                                            <option value="Rocket">Rocket</option>
-                                            <option value="Nagad">Nagad</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-3" id="payment_number">
-                                        <input placeholder="Payment Number" type="number"
-                                            class="payment_number form-control form-control-sm">
-                                    </div> --}}
-                                </div>
-                            </div>
                         </div>
                         <div class="card-body row">
-                            <div class="col-lg-8 table-responsive row" style="height: 440px;">
+                            <div class="col-lg-8 table-responsive row" style="height: 480px;">
                                 <table id="CartExample" class="table table-head-fixed">
                                     <thead>
                                         <tr>

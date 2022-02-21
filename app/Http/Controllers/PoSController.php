@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Model\Cart;
+use App\Model\Category;
 use App\Model\Customer;
 use App\Model\Product;
 use App\Model\Sale;
 use App\Model\SaleItem;
+use App\Model\Setting;
 use App\Model\Stock;
 use App\Model\Company;
 use DateTime;
@@ -16,53 +18,60 @@ use Illuminate\Support\Facades\Session;
 
 class PoSController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    // }
+     public function __construct()
+     {
+         $this->middleware('auth');
+     }
 
     public function pos(Request $request)
     {
         $date       = new DateTime("now");
         $today      = $date->format('Y-m-d');
-        $data       = $date->format('ymd');
-        if ($last   = Sale::get()->last()) {
-            $sl     = $last->id;
-        } else {
-            $sl     = 0;
-        }
-        $po         = 'INV';
-        $s          = $sl + 1 ;
-        $sale       = $po . $data . $s ;
-        $products   = Stock::orderBy('name', 'asc')
-                            ->leftJoin('products', 'products.code', 'stocks.code')
-                            ->select('stocks.*','products.image')
-                            ->where('quantity','>','0')->get();
-        $customers  = Customer::orderBy('id', 'DESC')->get();
+        $last_id    = Sale::get()->last() ? Sale::get()->last()->id : 0;
+        $initial    = Setting::first() ? Setting::first()->sale_code_initial : "";
+        $serial     = $last_id + 1;
+        $invoice_no = $initial . $date->format('ymd') . $serial;
+        $categries  = Category::all();
+        $products   = Stock::orderBy('products.name', 'asc')
+                            ->join('products', 'products.id', 'stocks.product_id')
+                            ->select('stocks.*','products.image','products.category','products.code','products.name')
+                            ->where('stocks.quantity','>','0')
+                            ->get();
+        $users      = Customer::orderBy('id', 'DESC')->get();
         $carts      = DB::table('carts')->orderBy('id', 'DESC')->get();
         $tqty       = $carts->sum('quantity');
         $subt       = $carts->sum('total');
-
-        return view('backend.Pos.pos_terminal',
-            compact('today','sale','products','customers','carts','tqty','subt'));
+        $terminal   = Setting::first()->sale_terminal ? Setting::first()->sale_terminal : "";
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        if ($terminal == 2){
+            $view = 'backend.Pos.terminal2';
+        } elseif ($terminal == 3) {
+            $view = 'backend.Pos.terminal3';
+        } elseif ($terminal == 1) {
+            $view = 'backend.Pos.sale';
+        } else {
+            $view = 'backend.Pos.sale';
+        }
+        Session::forget('sale_no');
+        return view($view, compact('today','invoice_no','categries','products','users','carts','tqty','subt','vat'));
     }
 
     public function product_search(Request $request)
     {
-        if($request->ajax())
-        {
-            $data   = Stock::where('code', 'LIKE', '%'.$request->value.'%')->get();
-            $output = '';
-            if (count($data)>0)
-            {
-                $output = '<ul class="list-group" style="display: block; position: relative; overflow: hidden; z-index: 1">';
+        if ($request->ajax()) {
+            $data = Stock::join('products', 'products.id', 'stocks.product_id')
+                ->select('stocks.*','products.image','products.category','products.code','products.name')
+                ->where('stocks.quantity','>','0')
+                ->where('products.code', 'LIKE', '%'.$request->value.'%')
+                ->get();
+            if (count($data) > 0) {
+                $output = '<ul class="list-group p-1" style="display: block; position: absolute; background-color: #FFFFFF;">';
                 foreach ($data as $row){
-                    $output .= '<li class="list- group-item">'.$row->code.'</li>';
+                    $output .= '<li class="list-group-item">'.$row->code.'</li>';
                 }
                 $output .= '</ul>';
-            }
-            else {
-                $output .= '<li class="list- group-item">'.'Product Not Found.'.'</li>';
+            } else {
+                $output = '';
             }
             return $output;
         }
@@ -70,41 +79,47 @@ class PoSController extends Controller
 
     public function product_add(Request $request)
     {
-        $products   = Stock::where('code', $request->code)->first();
+        $products   = Stock::join('products', 'products.id', 'stocks.product_id')
+                        ->select('stocks.*','products.image','products.category','products.code','products.name')
+                        ->where('products.code', $request->code)
+                        ->first();
         $pcode      = $products->code;
         $cart       = DB::table('carts')->where('code', $pcode)->first();
-
         if ($cart   == null) {
-            $insert = DB::table('carts')
-                        ->insert([
-                                'name'      => $products->name,
-                                'code'      => $products->code,
-                                'quantity'  => 1,
-                                'price'     => $products->price,
-                                'total'     => $products->price
-                            ]);
+            DB::table('carts')
+                ->insert([
+                        'name'      => $products->name,
+                        'code'      => $products->code,
+                        'quantity'  => 1,
+                        'price'     => $products->price,
+                        'total'     => $products->price
+                    ]);
         } else {
-            $insert = DB::table('carts')
-                        ->where('code', $pcode)
-                        ->increment('quantity', 1);
+            DB::table('carts')
+                ->where('code', $pcode)
+                ->increment('quantity', 1);
             $cart   = DB::table('carts')->where('code', $pcode)->first();
             $qty    = $cart->quantity;
             $price  = $cart->price;
             $total  = $price * $qty;
-            $insert = DB::table('carts')
-                        ->where('code', $pcode)
-                        ->update(['total' => $total]);
+            DB::table('carts')
+                ->where('code', $pcode)
+                ->update(['total' => $total]);
         }
-        $tqty   = DB::table('carts')->sum('quantity');
-        $subt   = DB::table('carts')->sum('total');
-        $carts  = DB::table('carts')->where('code', $pcode)->first();
-        $id = $carts->id;
-        $name = $carts->name;
+        $tqty       = DB::table('carts')->sum('quantity');
+        $subt       = DB::table('carts')->sum('total');
+        $carts      = DB::table('carts')->where('code', $pcode)->first();
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vatamnt    = ($subt * $vat) / 100;
+        $payable    = $subt + $vatamnt;
         return response()->json([
-                                    'carts' => $carts,
-                                    'tqty'  => $tqty,
-                                    'subt'  => $subt,
-                                ]);
+            'carts'     => $carts,
+            'tqty'      => $tqty,
+            'subt'      => $subt,
+            'payable'   => $payable,
+            'vat'       => $vatamnt,
+            'message'   => "Product added to cart Successfully.",
+        ]);
     }
 
     public function customer_details(Request $request)
@@ -115,108 +130,147 @@ class PoSController extends Controller
 
     public function customer_store(Request $request)
     {
-        $data           = new Customer();
-        $data->name     = $request->name;
-        $data->phone    = $request->phone;
-        $data->email    = $request->email;
-        $data->category = $request->category;
-        $data->balance  = $request->balance;
-        $data->address  = $request->address;
-        $data->save();
-        return redirect()->back();
+        $request->validate([
+            'name'  => 'required',
+        ]);
+        $data = Customer::create([
+            'name'      => $request->name,
+            'phone'     => $request->phone,
+            'email'     => $request->email,
+            'category'  => $request->category,
+            'balance'   => $request->balance,
+            'address'   => $request->address
+        ]);
+        if ($data) {
+            return response()->json(array(
+                'info'  =>  $data,
+                'message'  =>  "Customer Information Saved Successfully",
+            ));
+        } else {
+            return response()->json(array(
+                'message'  =>  "Customer Information Not Saved",
+            ));
+        }
     }
 
     public function item_add(Request $request)
     {
-        $products   = Stock::where('id', $request->id)->first();
+        $products   = Stock::join('products', 'products.id', 'stocks.product_id')
+                            ->select('stocks.*','products.image','products.category','products.code','products.name')
+                            ->where('stocks.id', $request->id)
+                            ->first();
         $pcode      = $products->code;
         $cart       = DB::table('carts')->where('code', $pcode)->first();
 
-        if ($cart   == null) {
-            $insert = DB::table('carts')
-                        ->insert([
-                                'name'      => $products->name,
-                                'code'      => $products->code,
-                                'quantity'  => 1,
-                                'price'     => $products->price,
-                                'total'     => $products->price
-                            ]);
+        if ($cart === null) {
+            DB::table('carts')
+                ->insert([
+                        'name'      => $products->name,
+                        'code'      => $products->code,
+                        'quantity'  => 1,
+                        'price'     => $products->price,
+                        'total'     => $products->price
+                    ]);
         } else {
-            $insert = DB::table('carts')
-                        ->where('code', $pcode)
-                        ->increment('quantity', 1);
+            DB::table('carts')
+                    ->where('code', $pcode)
+                    ->increment('quantity', 1);
             $cart   = DB::table('carts')->where('code', $pcode)->first();
             $qty    = $cart->quantity;
             $price  = $cart->price;
             $total  = $price * $qty;
-            $insert = DB::table('carts')
-                        ->where('code', $pcode)
-                        ->update(['total' => $total]);
+            DB::table('carts')
+                    ->where('code', $pcode)
+                    ->update(['total' => $total]);
         }
-        $tqty   = DB::table('carts')->sum('quantity');
-        $subt   = DB::table('carts')->sum('total');
-        $carts  = DB::table('carts')->where('code', $pcode)->first();
-        $id = $carts->id;
-        $name = $carts->name;
+        $tqty       = DB::table('carts')->sum('quantity');
+        $subt       = DB::table('carts')->sum('total');
+        $carts      = DB::table('carts')->where('code', $pcode)->first();
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vatamnt    = ($subt * $vat) / 100;
+        $payable    = $subt + $vatamnt;
         return response()->json([
-                                    'carts' => $carts,
-                                    'tqty'  => $tqty,
-                                    'subt'  => $subt,
-                                ]);
+            'carts'     => $carts,
+            'tqty'      => $tqty,
+            'subt'      => $subt,
+            'payable'   => $payable,
+            'vat'       => $vatamnt,
+            'message'   => "Product added to cart Successfully.",
+        ]);
     }
 
-    public function item_delete(Request $request)
+    public function item_remove(Request $request)
     {
         DB::table('carts')->where('id', $request->id)->delete();
-        $tqty   = DB::table('carts')->sum('quantity');
-        $subt   = DB::table('carts')->sum('total');
+        $tqty       = DB::table('carts')->sum('quantity');
+        $subt       = DB::table('carts')->sum('total');
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vatamnt    = ($subt * $vat) / 100;
+        $payable    = $subt + $vatamnt;
         return response()->json([
             'tqty'      => $tqty,
             'subt'      => $subt,
+            'payable'   => $payable,
+            'vat'       => $vatamnt,
+            'message'   => "Product removed from cart",
         ]);
     }
 
     public function item_quantity(Request $request)
     {
-        $update = DB::table('carts')
+        DB::table('carts')
                     ->where('code', $request->id)
                     ->update(['quantity' => $request->qty]);
-        $cart   = DB::table('carts')->where('code', $request->id)->first();
-        $price  = $cart->price;
-        $qty    = $cart->quantity;
-        $total  = $price * $qty;
-        $update = DB::table('carts')
+        $cart       = DB::table('carts')->where('code', $request->id)->first();
+        $price      = $cart->price;
+        $qty        = $cart->quantity;
+        $total      = $price * $qty;
+        DB::table('carts')
                     ->where('code', $request->id)
                     ->update(['total' => $total]);
-        $tqty   = DB::table('carts')->sum('quantity');
-        $subt   = DB::table('carts')->sum('total');
+        $tqty       = DB::table('carts')->sum('quantity');
+        $subt       = DB::table('carts')->sum('total');
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vatamnt    = ($subt * $vat) / 100;
+        $payable    = $subt + $vatamnt;
         return response()->json([
-                    'tqty'      => $tqty,
-                    'subt'      => $subt,
-                ]);
+            'tqty'      => $tqty,
+            'subt'      => $subt,
+            'payable'   => $payable,
+            'vat'       => $vatamnt,
+            'message'   => "Product quantity updated Successfully.",
+        ]);
     }
 
     public function item_price(Request $request)
     {
-        $cart   = DB::table('carts')->where('code', $request->id)->first();
-        $qty    = $cart->quantity;
-        $price  = $request->price;
-        $total  = $price * $qty;
-        $update = DB::table('carts')
+        $cart       = DB::table('carts')->where('code', $request->id)->first();
+        $qty        = $cart->quantity;
+        $price      = $request->price;
+        $total      = $price * $qty;
+        DB::table('carts')
                     ->where('code', $request->id)
                     ->update(['price' => $price, 'total' => $total]);
-        $tqty   = DB::table('carts')->sum('quantity');
-        $subt   = DB::table('carts')->sum('total');
+        $tqty       = DB::table('carts')->sum('quantity');
+        $subt       = DB::table('carts')->sum('total');
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vatamnt    = ($subt * $vat) / 100;
+        $payable    = $subt + $vatamnt;
         return response()->json([
-                    'tqty'      => $tqty,
-                    'subt'      => $subt,
-                ]);
+            'tqty'      => $tqty,
+            'subt'      => $subt,
+            'payable'   => $payable,
+            'vat'       => $vatamnt,
+            'message'   => "Product price updated Successfully.",
+        ]);
     }
 
     public function cart_clear(Request $request)
     {
         DB::table('carts')->truncate();
-        return redirect()->back();
+        return response()->json(array(
+            'message'   => "All product removed from cart successfully",
+        ));
     }
 
     public function discount(Request $request)
@@ -228,16 +282,21 @@ class PoSController extends Controller
         $paid           = $request->paid;
         if ($disc_type  == '1') {
             $d          = ($subt * $disc) / 100;
-            $payable    = $subt - $d;
+            $payabl     = $subt - $d;
         } else {
-            $payable    = $subt - $disc;
+            $payabl     = $subt - $disc;
         }
+        $vat = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vatamnt        = ($payabl * $vat) / 100;
+        $payable        = $payabl + $vatamnt;
         return response()->json([
-                'payable'   => $payable,
+                'vat'       => $vatamnt,
                 'tqty'      => $tqty,
                 'subt'      => $subt,
+                'payable'   => $payable,
                 'disc'      => $disc,
                 'paid'      => $paid,
+                'message'   => "Discount calculated successfully",
             ]);
     }
 
@@ -250,16 +309,21 @@ class PoSController extends Controller
         $disc_type      = $request->disc_type;
         if ($disc_type  == '1') {
             $d          = ($subt * $disc) / 100;
-            $payable    = $subt - $d;
+            $payabl     = $subt - $d;
         } else {
-            $payable    = $subt - $disc;
+            $payabl     = $subt - $disc;
         }
+        $vat            = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vatamnt        = ($payabl * $vat) / 100;
+        $payable        = $payabl + $vatamnt;
         return response()->json([
-                'payable'   => $payable,
+                'vat'       => $vatamnt,
                 'tqty'      => $tqty,
                 'subt'      => $subt,
+                'payable'   => $payable,
                 'disc'      => $disc,
                 'paid'      => $paid,
+                'message'   => "Discount calculated successfully",
             ]);
     }
 
@@ -278,78 +342,87 @@ class PoSController extends Controller
         return response()->json(array(
                 'due'       => $due,
                 'return'    => $return,
-            ));
+                'message'   => "Paid amount calculated successfully",
+        ));
     }
 
     public function item_store(Request $request)
     {
         $date       = new DateTime("now");
-        $data       = $date->format('ymd');
-        if ($last   = Sale::get()->last()) {
-            $sl     = $last->id;
-        } else {
-            $sl     = 0;
-        }
-        $po         = 'INV';
-        $s          = $sl + 1 ;
-        $sale       = $po . $data . $s ;
-        if ($request->customer != 'Cash') {
+        $today      = $date->format('Y-m-d');
+        $last_id    = Sale::get()->last() ? Sale::get()->last()->id : 0;
+        $initial    = Setting::first() ? Setting::first()->sale_code_initial : "";
+        $serial     = $last_id + 1;
+        $invoice_no = $initial . $date->format('ymd') . $serial;
+        if (!empty($request->customer) && $request->customer != 'Cash') {
             $cust = Customer::where('id', $request->customer)->first();
-            $cust->balance  = $cust->balance + $request->due;
-            $cust->save();
+            if (!empty($cust)) {
+                $cust->balance = $cust->balance + $request->due;
+                $cust->save();
+            }
         }
+        // dd($request->all());
         $data                   = new Sale();
-        $data->sale_no          = $sale;
-        $data->customer         = $request->customer;
-        $data->date             = $request->sale_date;
+        $data->sale_no          = $request->invoice_no ? $request->invoice_no : $invoice_no;
+        $data->customer         = !empty($request->customer) ? $request->customer : 'Cash';
+        $data->date             = $request->date ? $request->date : $today;
         $data->amount           = $request->due_amount;
         $data->total_qty        = $request->total_qty;
         $data->sub_total        = $request->sub_total;
         $data->discount         = $request->discount;
         $data->disc_type        = $request->disc_type;
+        $data->vat              = $request->vat;
         $data->payable          = $request->payable;
         $data->paid             = $request->paid;
         $data->return           = $request->return;
         $data->due              = $request->due;
         $data->payment_type     = $request->payment_type;
         $data->payment_number   = $request->payment_number;
-        $data->save();
-
-        $cart = DB::table('carts')->get();
-        foreach ($cart as $item)
-        {
-            $insert = DB::table('sale_items')
-                        ->insert([
-                                'name'      => $item->name,
-                                'code'      => $item->code,
-                                'sale_no'   => $sale,
-                                'date'      => $request->sale_date,
-                                'price'     => $item->price,
-                                'quantity'  => $item->quantity,
-                                'total'     => $item->total
-                            ]);
-            $update = DB::table('stocks')
-                        ->where('code', $item->code)
-                        ->decrement('quantity', $item->quantity);
+        if($data->save()) {
+            $cart = DB::table('carts')
+                    ->leftJoin('products','carts.code','products.code')
+                    ->select('carts.*','products.sale_price','products.id as product_id')
+                    ->get();
+            foreach ($cart as $item) {
+                DB::table('sale_items')
+                    ->insert([
+                            'name'      => $item->name,
+                            'product_id'=> $item->product_id,
+                            'sale_no'   => $request->invoice_no ? $request->invoice_no : $invoice_no,
+                            'date'      => $request->date ? $request->date : $today,
+                            'price'     => $item->price,
+                            'quantity'  => $item->quantity,
+                            'total'     => $item->total
+                        ]);
+                DB::table('stocks')
+                    ->where('product_id', $item->product_id)
+                    ->decrement('quantity', $item->quantity);
+            }
+            DB::table('carts')->truncate();
+            Session::put('sale_no', $data->sale_no);
+            return response()->json(array(
+                'message' => 'Product Sold Successfully',
+            ));
+        } else {
+            return response()->json(array(
+                'message' => 'Product Not Sold',
+            ));
         }
-        DB::table('carts')->truncate();
-        Session::put('invoice', $data->sale_no);
-        // $invoice = $data->sale_no;
-        // return response()->json($invoice);
     }
 
     public function mini_invoice(Request $request)
     {
-        $company    = Company::all();
-        $sales      = Sale::where('sale_no', $request->id)
+        $company    = Company::first();
+        $sale       = Sale::where('sale_no', $request->id)
                             ->leftJoin('customers','sales.customer','customers.id')
-                            ->select('sales.*','customers.name as customer',
-                                    'customers.phone','customers.email','customers.address')
+                            ->select('sales.*','customers.name as customer','customers.phone','customers.email','customers.address')
+                            ->first();
+        $sales_dt   = SaleItem::where('sale_items.sale_no', $request->id)
+                            ->leftJoin('products', 'sale_items.product_id', 'products.id')
+                            ->select('sale_items.*','products.code')
                             ->get();
-        $sales_dt   = SaleItem::where('sale_no', $request->id)->get();
 
-        return view('backend.Reports.Sale.miniInvoicePrint2',
-            compact('company','sales','sales_dt'));
+        return view('backend.Reports.Sale.miniInvoicePrint', compact('company','sale','sales_dt'));
     }
 
 }

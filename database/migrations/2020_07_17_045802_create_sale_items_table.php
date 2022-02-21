@@ -16,7 +16,7 @@ class CreateSaleItemsTable extends Migration
         Schema::create('sale_items', function (Blueprint $table) {
             $table->id();
             $table->string('sale_no');
-            $table->date('date')->nullable();
+            $table->dateTime('date')->nullable();
             $table->string('name')->nullable();
             $table->string('code')->nullable();
             $table->double('price', 10,2)->nullable();

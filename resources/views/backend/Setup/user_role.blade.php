@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'User Role')
+@section('title', 'User List')
 
 @section('content')
     <div class="content-wrapper">
@@ -9,10 +9,12 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">User Role Table</h3>
+                            <h3 class="card-title">User List <small class="text-secondary">(with Role)</small></h3>
+                            @can('user_role_create')
                             <button type="button" class="btn btn-primary aDD btn-xs float-right" data-toggle="modal" data-target="#add-modal-sm">
                                 <i class="fas fa-plus-circle"></i> {{ __('Add New User') }}
                             </button>
+                            @endcan
                         </div>
                         <div class="card-body">
                             <table id="example1" class="table table-bordered table-striped">
@@ -35,17 +37,18 @@
                                         <td>{{ $data->email }}</td>
                                         <td>{{ $data->role_name }}</td>
                                         <td class="text-center">
-                                            @if( $data->role != 'superadmin' )
-                                                <button type="button" value="{{ $data->id }}" class="btn btn-primary
-                                                edIT btn-xs" data-toggle="modal" data-target="#role-modal-sm"
-                                                        title="Update User">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                </button>
-                                                <button type="button" value="{{ $data->id }}" class="btn btn-info
-                                                btn-xs user_pass" data-toggle="modal" data-target="#password-modal-sm" title="Change Password">
-                                                    <i class="fas fa-unlock-alt"></i>
-                                                </button>
-                                            @endif
+                                            @can('user_role_update')
+                                            <button type="button" value="{{ $data->id }}" class="btn btn-primary edIT btn-xs"
+                                                data-toggle="modal" data-target="#role-modal-sm" title="Update User">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            @endcan
+                                            @can('user_password_update')
+                                            <button type="button" value="{{ $data->id }}" class="btn btn-info btn-xs user_pass"
+                                                data-toggle="modal" data-target="#password-modal-sm" title="Change Password">
+                                                <i class="fas fa-unlock-alt"></i>
+                                            </button>
+                                            @endcan
                                         </td>
                                     </tr>
                                     @endif
@@ -55,15 +58,15 @@
                                     </tr>
                                 @endforelse
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <th><i class="fas fa-hashtag"></i></th>
-                                    <th>User Name</th>
-                                    <th>User Email</th>
-                                    <th>Role</th>
-                                    <th class="text-center"><i class="fas fa-cog"></i></th>
-                                </tr>
-                                </tfoot>
+{{--                                <tfoot>--}}
+{{--                                <tr>--}}
+{{--                                    <th><i class="fas fa-hashtag"></i></th>--}}
+{{--                                    <th>User Name</th>--}}
+{{--                                    <th>User Email</th>--}}
+{{--                                    <th>Role</th>--}}
+{{--                                    <th class="text-center"><i class="fas fa-cog"></i></th>--}}
+{{--                                </tr>--}}
+{{--                                </tfoot>--}}
                             </table>
                         </div>
                     </div>
@@ -157,7 +160,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success btn-sm">Update</button>
+                        <button type="submit" class="btn btn-success btn-sm userUpdate">Update</button>
                     </div>
                 </form>
             </div>
@@ -205,6 +208,12 @@
 @endsection
 @section('customJs')
     <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 4000
+        });
         $(document).ready(function () {
             $('#useradd').on('submit', function (e) {
                 e.preventDefault();
@@ -253,7 +262,7 @@
                     },
                     submitHandler: function(form) {
                         let formData = new FormData(document.getElementById("useradd"));
-                        $('.userSave').html('Submitting...');
+                        $(".userSave").html('Submitting...');
                         $.ajax({
                             type: "POST",
                             url: "{{ route('user.role.add') }}",
@@ -264,12 +273,6 @@
                             success: function (response) {
                                 $('.userSave').html('Save');
                                 // $('#example1').DataTable().ajax.reload();
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 4000
-                                });
                                 $(function () {
                                     Toast.fire({
                                         type: '' + response.type + '',
@@ -278,19 +281,14 @@
                                 });
                                 if (response.type === 'success') {
                                     $('#add-modal-sm').modal('hide');
-                                    setTimeout(function () {
-                                        location.reload();
-                                    }, 3000);
+                                    $("#example1").load(location + " #example1");
+                                    // setTimeout(function () {
+                                    //     location.reload();
+                                    // }, 3000);
                                 }
                             },
                             error: function (response) {
                                 $('.userSave').html('Save');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
                                 $(function () {
                                     Toast.fire({
                                         type: '' + response.type + '',
@@ -302,7 +300,7 @@
                     }
                 })
             });
-            $('.edIT').on('click', function () {
+            $('body').on('click', '.edIT', function () {
                 let id = $(this).val();
                 $.ajax({
                     type: "GET",
@@ -335,6 +333,7 @@
                         },
                     },
                     submitHandler: function(form) {
+                        $(".userUpdate").html('Updating...');
                         $.ajax({
                             type: "POST",
                             url: "{{ route('user.role.update') }}",
@@ -345,30 +344,22 @@
                                 'role': $(".role").val(),
                             },
                             success: function (response) {
+                                $('.userUpdate').html('Update');
                                 $('#role-modal-sm').modal('hide');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
                                 $(function () {
                                     Toast.fire({
                                         type: 'success',
                                         title: '&nbsp; User role info update Successfully... '
                                     })
                                 });
-                                setTimeout(function () {
-                                    location.reload();
-                                }, 2000);
+                                $("#example1").load(location + " #example1");
+                                // setTimeout(function () {
+                                //     location.reload();
+                                // }, 2000);
                             },
                             error: function (error) {
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
+                                $('.userUpdate').html('Update');
+                                $('#role-modal-sm').modal('hide');
                                 $(function () {
                                     Toast.fire({
                                         type: 'error',
@@ -427,12 +418,6 @@
                             },
                             success: function (response) {
                                 $('.passconfirm').html('Confirm');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 4000
-                                });
                                 $(function () {
                                     Toast.fire({
                                         type: '' + response.type + '',
@@ -441,19 +426,12 @@
                                 });
                                 if (response.type === 'success') {
                                     $('#password-modal-sm').modal('hide');
-                                    setTimeout(function () {
-                                        location.reload();
-                                    }, 3000);
+                                    $("#example1").load(location + " #example1");
                                 }
                             },
                             error: function (response) {
                                 $('.passconfirm').html('Confirm');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
+                                $('#password-modal-sm').modal('hide');
                                 $(function () {
                                     Toast.fire({
                                         type: '' + response.type + '',

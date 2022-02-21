@@ -51,12 +51,12 @@
                                             <i class="fas fa-university bg-primary"></i>
                                             <div class="timeline-item">
                                                 {{--  <span class="time"><i class="far fa-clock"></i> 12:05</span>  --}}
-                                               {{-- <h3 class="timeline-header">
-                                                    <a href="#" style="color: blue;">{{ $data->title }}</a>
-                                                </h3>--}}
                                                 <h3 class="timeline-header">
-                                                    <a href="#" style="color: skyblue;">{{ $data->name }}</a>
+                                                    <a href="#" style="color: blue;">{{ $data->title }}</a>
                                                 </h3>
+{{--                                                <h3 class="timeline-header">--}}
+{{--                                                    <a href="#" style="color: skyblue;">{{ $data->name }}</a>--}}
+{{--                                                </h3>--}}
                                                 {{--  <div class="timeline-body">
                                                     Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
                                                     weebly ning heekya handango imeem plugg dopplr jibjab, movity
@@ -125,7 +125,7 @@
                                     <form action="{{ route('company.update') }}" method="POST"
                                         enctype="multipart/form-data">@csrf
                                         <input name="id" value="{{ $data->id }}" type="hidden"/>
-<!--                                        <div class="form-group row">
+                                        <div class="form-group row">
                                             <label class="col-sm-2">Title</label>
                                             <div class="col-sm-10">
                                                 <input type="text" name="title" required
@@ -133,8 +133,8 @@
                                                     value="{{ $data->title }}"
                                                     placeholder="Company Title">
                                             </div>
-                                        </div>-->
-                                        <div class="form-group row">
+                                        </div>
+<!--                                        <div class="form-group row">
                                             <label class="col-sm-2">Name</label>
                                             <div class="col-sm-10">
                                                 <input type="text" name="name" required
@@ -142,7 +142,7 @@
                                                     value="{{ $data->name }}"
                                                     placeholder="Company Name">
                                             </div>
-                                        </div>
+                                        </div>-->
                                         <div class="form-group row">
                                             <label class="col-sm-2">Phone</label>
                                             <div class="col-sm-10">

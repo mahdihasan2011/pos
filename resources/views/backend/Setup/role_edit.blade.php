@@ -99,10 +99,12 @@
                                 </div>
                             </div>
                         </div>
+                        @can('role_update')
                         <div class="card-footer text-center">
                             <button type="reset" class="btn btn-danger btn-sm">Reset</button>
                             <button type="submit" class="btn btn-success btn-sm">Update</button>
                         </div>
+                        @endcan
                     </form>
                 </div>
             </div>

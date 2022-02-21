@@ -1,27 +1,9 @@
 @extends('layouts.master')
 @section('title')
-    Sales
+    {{ !empty($title) ? $title : "Point of Sale" }}
 @endsection
 @section('customCSS')
-
-    <style>
-        .blink_me1 {
-            animation: blinker 1s linear infinite;
-        }
-        .blink_me05 {
-            animation: blinker 0.5s linear infinite;
-        }
-        .blink_me2 {
-            color: red;
-            font-size: 24px;
-            animation: blinker 2s linear infinite;
-        }
-        @keyframes blinker {
-            50% {
-            opacity: 0;
-            }
-        }
-    </style>
+    <style></style>
 @endsection
 @section('content')
 <div class="content-wrapper">
@@ -33,12 +15,14 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="row">
-                                <div class="col-lg-4 row">
+                                <div class="col-lg-3 row">
                                     <h5 class="col-lg-12">
-                                        Sales Invoice <b class="blink_me05">:</b>
-                                        <small style="color: #0000ff;">{{ $sale }}</small>
-                                        <input type="hidden" class="sale_no" value="{{ $sale }}"/>
+                                        Invoice # <small>{{ $invoice_no }}</small>
+                                        <input type="hidden" class="invoice_no" value="{{ $invoice_no }}"/>
                                     </h5>
+                                </div>
+                                <div class="col-lg-2">
+                                    <input type="date" value="{{ $today }}" name="date" class="form-control form-control-sm"/>
                                 </div>
                                 <div class="col-lg-5 row form-group">
                                     <select class="col-lg-10 select2 bs4 form-control form-control-sm"
@@ -50,7 +34,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <h6 class="col-lg-3 text-right form-inline" style="float: right;">
+                                <h6 class="col-lg-2 text-right form-inline" style="float: right;">
                                     Total Bill (Tk.) : &nbsp;
                                     <b class="blink_me2 BILL"></b>
                                 </h6>
@@ -62,7 +46,7 @@
                                             name="customer" id="CUST" title="Select Customer"
                                             data-placeholder="Select Customer">
                                             <option value="Cash">Cash</option>
-                                            @foreach ($customers as $data)
+                                            @foreach ($users as $data)
                                             <option value="{{ $data->id }}">{{ $data->name }}</option>
                                             @endforeach
                                         </select>
@@ -108,8 +92,8 @@
                                 <table id="CartExample" class="table table-head-fixed">
                                     <thead>
                                         <tr>
-                                            <th>SL.</th>
-                                            <th colspan="2">Description</th>
+{{--                                            <th>SL.</th>--}}
+                                            <th>Description</th>
                                             <th>Quantity</th>
                                             <th class="text-center">Price</th>
                                             <th class="text-right">Total</th>
@@ -117,23 +101,21 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php $i = 1 @endphp
+{{--                                        @php $i = 1 @endphp--}}
                                         @foreach ($carts as $data)
                                         <tr>
-                                            <td class="form-control-sm">{{ $i++ }}.</td>
-                                            <td colspan="2">
-                                                {{ $data->name }} <small>( {{ $data->code }} )</small>
-                                            </td>
+{{--                                            <td class="form-control-sm">{{ $i++ }}.</td>--}}
+                                            <td>{{ $data->name }}</td>
                                             <td class="form-inline">
                                                 <input class="QTY form-control form-control-sm text-center"
                                                     value="{{ $data->quantity }}" name="quantity"
                                                     data-id="{{ $data->code }}" type="text"
-                                                    style="width: 70px;"/>
+                                                    />
                                             </td>
                                             <td class="text-right">
                                                 <input class="PRICE form-control form-control-sm text-right"
                                                     value="{{ $data->price }}" data-id="{{ $data->code }}"
-                                                    name="quantity" type="text" style="width: 100px;"/>
+                                                    name="quantity" type="text" />
                                             </td>
                                             <td class="text-right">{{ $data->total }}</td>
                                             <td>
@@ -154,25 +136,23 @@
                                             <td class="text-right form-control-sm">Total Quantity : </td>
                                             <td>
                                                 <input class="text-center form-control form-control-sm TQTY"
-                                                    name="total_qty" value="0" readonly
-                                                    style="border: hidden; width: 150px;"/>
+                                                    name="total_qty" value="0" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-right form-control-sm">SubTotal (Tk.) : </td>
                                             <td>
                                                 <input class="text-right form-control form-control-sm SUBT"
-                                                    name="sub_total" value="0" readonly
-                                                    style="border: hidden; width: 150px;"/>
+                                                    name="sub_total" value="0" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-right form-control-sm">Discount : </td>
                                             <td class="form-inline">
-                                                <input class="text-center DISC col-lg-8 form-control form-control-sm"
-                                                    value="0" name="discount" type="number"
-                                                    required style="width: 80px;"/>
-                                                <select class="DISCTYPE col-lg-4 form-control form-control-sm">
+                                                <input class="text-center DISC col-lg-8 col-8 col-md-8 col-sm-8 form-control form-control-sm"
+                                                    value="0" name="discount" type="number" required title="Input
+                                                    distount amount"  data-toggle="tooltip" data-placement="top"/>
+                                                <select class="DISCTYPE col-lg-4 col-4 col-md-4 col-sm-4 form-control form-control-sm">
                                                     <option id="1" value="1">%</option>
                                                     <option id="2" value="2">Tk</option>
                                                 </select>
@@ -182,44 +162,52 @@
                                             <td class="text-right form-control-sm">Payable Amount (Tk.) : </td>
                                             <td>
                                                 <input class="text-right form-control form-control-sm PAY"
-                                                    value="0" name="payable" readonly style="border: hidden; width: 150px;">
+                                                    value="0" name="payable" readonly>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-right form-control-sm">Paid Amount (Tk.) : </td>
                                             <td>
                                                 <input class="text-center form-control form-control-sm PAID"
-                                                    required value="0" name="paid" type="number" style="width: 150px;" />
+                                                    required value="0" name="paid" type="number" title="Input paid amount"
+                                                       data-toggle="tooltip" data-placement="top"/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-right form-control-sm">Due Amount (Tk.) : </td>
                                             <td>
                                                 <input class="text-right form-control form-control-sm DUE"
-                                                    value="0" name="due" readonly style="border: hidden; width: 150px;"/>
+                                                    value="0" name="due" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-right form-control-sm">Return Amount (Tk.) : </td>
                                             <td>
-                                                <input class="text-right form-control form-control-sm
-                                                    RETURN" value="0" name="return" readonly
-                                                    style="border: hidden; width: 150px;"/>
+                                                <input class="text-right form-control form-control-sm RETURN"
+                                                    value="0" name="return" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-right">
-                                                <button class="btn btn-danger btn-sm CLEAR" type="button">
-                                                    Clear Cart
+                                                <button class="btn btn-danger btn-sm CLEAR" type="button"
+                                                        title="Click to remove all items from the cart"
+                                                        data-toggle="tooltip" data-placement="top">
+                                                    <i class="far fa-trash-alt"></i>
                                                 </button>
                                             </td>
                                             <td class="text-left">
-                                                <button class="btn btn-success btn-sm CATSAV" type="button">
-                                                    Confirm Sales
+                                                <button class="btn btn-success btn-sm CATSAV" type="submit"
+                                                        title="Click to Confirm Sale" data-toggle="tooltip" data-placement="top">
+                                                    <i class="fas fa-check-circle"></i><b>Confirm</b>
                                                 </button>
-                                                <a href="" class="btn btn-info btn-sm" target="_blank">
-                                                    <i class="fas fa-print"></i>
-                                                </a>
+                                                @if (session('invoice'))
+                                                    <a href="{{ route('pos.mini.invoice',['id'=>session('invoice')]) }}"
+                                                       class="btn btn-info btn-sm" title="Invoice Print" target="_blank"
+                                                       title="Click to remove all items from the cart" data-toggle="tooltip"
+                                                       data-placement="top">
+                                                        <i class="fas fa-print"></i>
+                                                    </a>
+                                                @endif
                                             </td>
                                         </tr>
                                     </tbody>
@@ -311,6 +299,11 @@
 @section('customJs')
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                defaultDate: new Date(),
+                useCurrent: false
+            });
             $('.CATSAV').on('click', function () {
                 const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
@@ -320,7 +313,7 @@
                 })
                 swalWithBootstrapButtons.fire({
                     title: 'Are you sure?',
-                    text: "You Want to Confirm this Products Sale ??",
+                    text: "You Want to Confirm this Products SaleOld ??",
                     type: 'question',
                     showCancelButton: true,
                     confirmButtonText: ' Yes, Confirm ! ',
@@ -357,7 +350,7 @@
                                 $(function() {
                                     Toast.fire({
                                     type: 'success',
-                                    title: ' &nbsp; Products Sale Completed Successfully... '
+                                    title: ' &nbsp; Products SaleOld Completed Successfully... '
                                     })
                                 });
                                 setTimeout(function(){
@@ -374,7 +367,7 @@
                                 $(function() {
                                     Toast.fire({
                                     type: 'error',
-                                    title: ' &nbsp; Products Sale Error !! '
+                                    title: ' &nbsp; Products SaleOld Error !! '
                                     })
                                 });
                             }
@@ -382,7 +375,7 @@
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire(
                         ' Canceled ',
-                        ' Products Sale Canceled ... ',
+                        ' Products SaleOld Canceled ... ',
                         'error'
                     )};
                 });

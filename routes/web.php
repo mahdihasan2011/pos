@@ -123,13 +123,10 @@ Route::prefix('color/')->name('color.')->group(function () {
 
 //-------------------------- Purchase -------------------------
 Route::prefix('purchase/')->name('purchase.')->group(function () {
-    Route::get('pos', 'PurchaseController@pos')->name('pos');
-    Route::get('item', 'PurchaseController@item')->name('item');
-    Route::get('supplier-details', 'PurchaseController@supplier_details')->name('supplier.details');
-    Route::post('supplier-store', 'PurchaseController@supplier_store')->name('supplier.store');
+    Route::get('/', 'PurchaseController@index')->name('index');
+    Route::post('users/store', 'PurchaseController@supplier_store')->name('supplier.store');
     Route::get('item-add', 'PurchaseController@item_add')->name('item.add');
-    Route::get('item-remove', 'PurchaseController@item_remove')->name('item.remove');
-    Route::get('item/delete/{id}', 'PurchaseController@item_delete')->name('item.delete');
+    Route::get('item/remove/{id}', 'PurchaseController@item_remove')->name('item.remove');
     Route::get('cart-clear', 'PurchaseController@cart_clear')->name('cart.clear');
     Route::get('item-quantity', 'PurchaseController@item_quantity')->name('item.quantity');
     Route::get('item-price', 'PurchaseController@item_price')->name('item.price');
@@ -137,28 +134,31 @@ Route::prefix('purchase/')->name('purchase.')->group(function () {
     Route::get('discount-type', 'PurchaseController@discount_type')->name('discount.type');
     Route::get('paid-amount', 'PurchaseController@paid_amount')->name('paid.amount');
     Route::post('item-store', 'PurchaseController@item_store')->name('item.store');
+    Route::get('invoice', 'PurchaseController@mini_invoice')->name('mini.invoice');
 });
 
-//-------------------------- Sale -------------------------
-Route::prefix('sale/')->name('sale.')->group(function () {
-    Route::get('product', 'SaleController@item')->name('item');
-    Route::get('customer-details', 'SaleController@customer_details')->name('customer.details');
-    Route::post('customer-store', 'SaleController@customer_store')->name('customer.store');
-    Route::get('item-add', 'SaleController@item_add')->name('item.add');
-    Route::get('item/delete/{id}', 'SaleController@item_delete')->name('item.delete');
-    Route::get('cart-clear', 'SaleController@cart_clear')->name('cart.clear');
-    Route::get('item-quantity', 'SaleController@item_quantity')->name('item.quantity');
-    Route::get('item-price', 'SaleController@item_price')->name('item.price');
-    Route::get('discount', 'SaleController@discount')->name('discount');
-    Route::get('discount-type', 'SaleController@discount_type')->name('discount.type');
-    Route::get('paid-amount', 'SaleController@paid_amount')->name('paid.amount');
-    Route::post('item-store', 'SaleController@item_store')->name('item.store');
+//-------------------------- Pos -------------------------
+Route::prefix('point-of-sale/')->name('pos.')->group(function () {
+    Route::get('/', 'PoSController@pos')->name('point_of_sale');
+    Route::get('product-search', 'PoSController@product_search')->name('product.search');
+    Route::get('product-add', 'PoSController@product_add')->name('product.add');
+    Route::get('customer-details', 'PoSController@customer_details')->name('customer.details');
+    Route::post('customer-store', 'PoSController@customer_store')->name('customer.store');
+    Route::get('item-add', 'PoSController@item_add')->name('item.add');
+    Route::get('item/remove/{id}', 'PoSController@item_remove')->name('item.remove');
+    Route::get('cart-clear', 'PoSController@cart_clear')->name('cart.clear');
+    Route::get('item-quantity', 'PoSController@item_quantity')->name('item.quantity');
+    Route::get('item-price', 'PoSController@item_price')->name('item.price');
+    Route::get('discount', 'PoSController@discount')->name('discount');
+    Route::get('discount-type', 'PoSController@discount_type')->name('discount.type');
+    Route::get('paid-amount', 'PoSController@paid_amount')->name('paid.amount');
+    Route::post('item-store', 'PoSController@item_store')->name('item.store');
+    Route::get('invoice', 'PoSController@mini_invoice')->name('mini.invoice');
 });
 
 //-------------------------- Stock -------------------------
 Route::prefix('stock/')->name('stock.')->group(function () {
     Route::get('current', 'StockController@current')->name('current');
-    Route::post('store', 'StockController@store')->name('store');
     Route::get('edit', 'StockController@edit')->name('edit');
     Route::post('update', 'StockController@update')->name('update');
     Route::get('destroy', 'StockController@destroy')->name('destroy');
@@ -184,28 +184,8 @@ Route::prefix('sales-report/')->name('sales.report.')->group(function () {
 
 });
 
-
-//-------------------------- Pos -------------------------
-Route::prefix('pos/')->name('pos.')->group(function () {
-    Route::get('point-of-sales', 'PoSController@pos')->name('terminal');
-    Route::get('product-search', 'PoSController@product_search')->name('product.search');
-    Route::get('product-add', 'PoSController@product_add')->name('product.add');
-    Route::get('customer-details', 'PoSController@customer_details')->name('customer.details');
-    Route::post('customer-store', 'PoSController@customer_store')->name('customer.store');
-    Route::get('item-add', 'PoSController@item_add')->name('item.add');
-    Route::get('item/delete/{id}', 'PoSController@item_delete')->name('item.delete');
-    Route::get('cart-clear', 'PoSController@cart_clear')->name('cart.clear');
-    Route::get('item-quantity', 'PoSController@item_quantity')->name('item.quantity');
-    Route::get('item-price', 'PoSController@item_price')->name('item.price');
-    Route::get('discount', 'PoSController@discount')->name('discount');
-    Route::get('discount-type', 'PoSController@discount_type')->name('discount.type');
-    Route::get('paid-amount', 'PoSController@paid_amount')->name('paid.amount');
-    Route::post('item-store', 'PoSController@item_store')->name('item.store');
-    Route::get('invoice', 'PoSController@mini_invoice')->name('mini.invoice');
-});
-
 //----------------------------- User-Role ----------------------------
-Route::prefix('user-role/')->name('user.')->middleware('auth')->group(function () {
+Route::prefix('user-role/')->name('user.')->group(function () {
     Route::get('management', 'UserController@index')->name('role.index');
     Route::post('add', 'UserController@add')->name('role.add');
     Route::get('edit', 'UserController@edit')->name('role.edit');
@@ -214,10 +194,45 @@ Route::prefix('user-role/')->name('user.')->middleware('auth')->group(function (
 });
 
 //----------------------------- Role ----------------------------
-Route::prefix('role/')->name('role.')->middleware('auth')->group(function () {
+Route::prefix('role/')->name('role.')->group(function () {
     Route::get('management', 'RoleController@index')->name('index');
     Route::get('create', 'RoleController@create')->name('create');
     Route::post('store', 'RoleController@store')->name('store');
     Route::get('edit', 'RoleController@edit')->name('edit');
     Route::post('update', 'RoleController@update')->name('update');
+});
+
+//-------------------------- Settings -------------------------
+Route::prefix('settings/')->name('settings.')->group(function () {
+    Route::get('index', 'SettingController@index')->name('index');
+    Route::post('store', 'SettingController@store')->name('store');
+    Route::get('edit', 'SettingController@edit')->name('edit');
+    Route::post('update', 'SettingController@update')->name('update');
+});
+
+//-------------------------- Image Upload -------------------------
+Route::post('/image-upload', 'UserController@image_upload')->name('image.upload');
+
+//-------------------------- User Profile -------------------------
+Route::prefix('profile')->name('profile.')->group(function () {
+    Route::post('/image', 'UserController@profile_image')->name('image');
+
+});
+
+//-------------------------- Expense -------------------------
+Route::prefix('expense/')->name('expense.')->group(function () {
+    Route::get('index', 'ExpenseController@index')->name('index');
+    Route::post('store', 'ExpenseController@store')->name('store');
+    Route::get('edit', 'ExpenseController@edit')->name('edit');
+    Route::post('update', 'ExpenseController@update')->name('update');
+    Route::get('destroy', 'ExpenseController@destroy')->name('destroy');
+});
+
+//-------------------------- Expense Type -------------------------
+Route::prefix('expense-type/')->name('expense.type.')->group(function () {
+    Route::get('index', 'ExpenseTypeController@index')->name('index');
+    Route::post('store', 'ExpenseTypeController@store')->name('store');
+    Route::get('edit', 'ExpenseTypeController@edit')->name('edit');
+    Route::post('update', 'ExpenseTypeController@update')->name('update');
+    Route::get('destroy', 'ExpenseTypeController@destroy')->name('destroy');
 });

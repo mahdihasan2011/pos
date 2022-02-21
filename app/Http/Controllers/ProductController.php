@@ -42,6 +42,7 @@ class ProductController extends Controller
         } else {
             $sl     = 0;
         }
+//        $sl         = Product::count();
         $pid        = $sl + 1 ;
         $category   = Category::orderBy('id', 'DESC')->get();
         $brand      = Brand::orderBy('id', 'DESC')->get();
@@ -68,26 +69,13 @@ class ProductController extends Controller
         else {
             $imageUrl = null;
         }
-//        $data           = new Product();
-//        $data->name     = $request->name;
-//        $data->code     = $request->code;
-//        $data->category = $request->category;
-//        $data->brand    = $request->brand;
-//        $data->color    = $request->color;
-//        $data->size     = $request->size;
-//        $data->purchase_price     = $request->purchase_price;
-//        $data->cost     = $request->cost;
-//        $data->profit   = $request->profit;
-//        $data->sale_price    = $request->sale_price;
-//        $data->image    = $imageUrl;
-//        $data->save();
         Product::create([
             'name'              => $request->name,
-            'code'              => $request->code,
-            'category'          => $request->category,
-            'brand'             => $request->brand,
-            'color'             => $request->color,
-            'size'              => $request->size,
+            'code'              => !empty($request->code) ? $request->code : 0,
+            'category'          => !empty($request->category) ? $request->category : 0,
+            'brand'             => !empty($request->brand) ? $request->brand : 0,
+            'color'             => !empty($request->color) ? $request->color : 0,
+            'size'              => !empty($request->size) ? $request->size : 0,
             'purchase_price'    => !empty($request->purchase_price) ? $request->purchase_price : 0,
             'cost'              => !empty($request->cost) ? $request->cost : 0,
             'profit'            => !empty($request->profit) ? $request->profit : 0,
@@ -117,19 +105,19 @@ class ProductController extends Controller
             $imageUrl = $data->image;
         }
         Product::where('id',$request->id)
-                ->update([
-                    'name'              => $request->name,
-                    'code'              => $request->code,
-                    'category'          => $request->category,
-                    'brand'             => $request->brand,
-                    'color'             => $request->color,
-                    'size'              => $request->size,
-                    'purchase_price'    => !empty($request->purchase_price) ? $request->purchase_price : $data->purchase_price,
-                    'cost'              => !empty($request->cost) ? $request->cost : $data->cost,
-                    'profit'            => !empty($request->profit) ? $request->profit : $data->profit,
-                    'sale_price'        => !empty($request->sale_price) ? $request->sale_price : $data->sale_price,
-                    'image'             => $imageUrl,
-                ]);
+            ->update([
+                'name'              => !empty($request->name) ? $request->name : $data->name,
+                'code'              => !empty($request->code) ? $request->code : $data->code,
+                'category'          => !empty($request->category) ? $request->category : $data->category,
+                'brand'             => !empty($request->brand) ? $request->brand : 0,
+                'color'             => !empty($request->color) ? $request->color : 0,
+                'size'              => !empty($request->size) ? $request->size : 0,
+                'purchase_price'    => !empty($request->purchase_price) ? $request->purchase_price : $data->purchase_price,
+                'cost'              => !empty($request->cost) ? $request->cost : $data->cost,
+                'profit'            => !empty($request->profit) ? $request->profit : $data->profit,
+                'sale_price'        => !empty($request->sale_price) ? $request->sale_price : $data->sale_price,
+                'image'             => $imageUrl,
+            ]);
         return redirect()->back();
     }
 

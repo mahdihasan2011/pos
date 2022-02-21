@@ -31,8 +31,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        
-        // dd(auth()->user()->role);
-        return redirect('/dashboard');
+        if (Auth::check()) {
+            // return view('backend.Home.home');
+       return redirect('/dashboard');
+        } else {
+            return redirect('/login');
+        }
     }
 }

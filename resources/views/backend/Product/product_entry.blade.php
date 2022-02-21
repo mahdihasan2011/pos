@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-    Item Entry
+    Product Entry
 @endsection
 @section('content')
 <div class="content-wrapper">
@@ -10,7 +10,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Item <small>( Entry )</small></h3>
+                        <h3 class="card-title">Product <small>( Entry )</small></h3>
                         <small style="float: right; color:gray">* This Fields Must Be Filled.</small>
                     </div>
                     <div class="card-body">
@@ -29,7 +29,7 @@
                                     <div class="col-lg-3 form-group">
                                         <label for="brand">Brand</label>
                                         <select class="form-control form-control-sm select2 brand" data-placeholder="Select Brand" name="brand">
-                                            <option value="00">Select Brand</option>
+                                            <option value="0">Select Brand</option>
                                             @foreach ($brand as $data)
                                             <option value="{{ $data->id }}" data-id="{{ $data->details }}">{{ $data->name }}</option>
                                             @endforeach
@@ -38,7 +38,7 @@
                                     <div class="col-lg-3 form-group">
                                         <label for="size">Size</label>
                                         <select class="form-control form-control-sm select2 size" data-placeholder="Select Size" name="size" >
-                                            <option value="00" data-id="00">Select Size</option>
+                                            <option value="0" data-id="00">Select Size</option>
                                             @foreach ($size as $data)
                                             <option value="{{ $data->id }}" data-id="{{ $data->details }}">{{ $data->name }}</option>
                                             @endforeach
@@ -47,16 +47,16 @@
                                     <div class="col-lg-3 form-group">
                                         <label for="color">Color</label>
                                         <select class="form-control form-control-sm select2 color" data-placeholder="Select Color" name="color">
-                                            <option value="00" data-id="00">Select Color</option>
+                                            <option value="0" data-id="00">Select Color</option>
                                             @foreach ($color as $data)
                                             <option value="{{ $data->id }}" data-id="{{ $data->details }}">{{ $data->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-lg-9 form-group">
-                                        <label for="name">Item Name <span style="color:gray">*</span></label>
+                                        <label for="name">Product Name <span style="color:gray">*</span></label>
                                         <input name="name" id="name" type="text" required
-                                               value="{{ old('name') }}" placeholder="Item Name"
+                                               value="{{ old('name') }}" placeholder="Product Name"
                                                class="form-control form-control-sm @error('name') is-invalid @enderror">
                                         @error('name')
                                         <span class="invalid-feedback" role="alert" style="color:red;">
@@ -65,9 +65,9 @@
                                         @enderror
                                     </div>
                                     <div class="col-lg-3 form-group">
-                                        <label for="code">Item Code</label>
+                                        <label for="code">Product Code</label>
                                         <input name="code" id="code" type="text" required
-                                               value="" placeholder="Item Code"
+                                               value="" placeholder="Product Code"
                                                class="form-control form-control-sm" readonly>
                                         {{--@error('code')
                                             <span class="invalid-feedback" role="alert"
@@ -97,15 +97,19 @@
                                         <input name="sale_price" class="form-control form-control-sm" value="{{ old('sale_price') }}" type="text" id="price" placeholder="Sale Price" required>
                                     </div>
                                     <div class="col-lg-9 form-group">
-                                        <label for="image">Item Image</label>
+                                        <label for="image">Product Image</label>
                                         <input name="image" type="file" value="{{ old('image') }}" class="form-control form-control-sm">
                                     </div>
                                 </div>
                             <div class="modal-footer justify-content-between center">
-                                <a href="{{ route('product.index') }}" class="btn btn-primary btn-sm"><i class="fas fa-reply"></i> Item List</a>
+                                @can('product_list')
+                                <a href="{{ route('product.index') }}" class="btn btn-primary btn-sm"><i class="fas fa-reply"></i> Product List</a>
+                                @endcan
                                 {{--                            <a href="{{ route('product.entry') }}" class="btn btn-warning btn-sm">Reset</a>--}}
                                 {{--                            <button type="reset" class="btn btn-info btn-sm">Clear</button>  --}}
+                                @can('product_create')
                                 <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-save"></i> <b>Save</b></button>
+                                @endcan
                             </div>
                         </form>
                     </div>
@@ -119,6 +123,8 @@
 @section('customJs')
     <script>
         $(document).ready(function() {
+            $('.size').find(':selected').data('id', '00');
+            $('.color').find(':selected').data('id', '00');
             let year = new Date().getFullYear().toString().substr(-2);
             let cat = '00';
             // let brnd = '00';
@@ -169,7 +175,7 @@
                     //}
                 },
                 messages: {
-                    name: "Please enter Item Name",
+                    name: "Please enter Product Name",
                     category: "Please enter Product Category",
                     // code: "Please enter Product Code",
                     //password: {
@@ -213,12 +219,12 @@
                         //}
                     },
                     messages: {
-                        name: "Please enter Item Name",
+                        name: "Please enter Product Name",
                         category: "Please enter Product Category",
                         purchase_price: "Please enter Product Purchase Price",
                         cost: "Please enter Cost",
                         profit: "Please enter Profit",
-                        sale_price: "Please enter Product Sale Price",
+                        sale_price: "Please enter Product SaleOld Price",
                         // code: "Please enter Product Code",
                         //password: {
                         //  required: "Please provide a password",
@@ -234,7 +240,7 @@
                 });
                 swalWithBootstrapButtons.fire({
                     title: 'Are you sure?',
-                    text: "You Want to Entry this Item ??",
+                    text: "You Want to Entry this Product ??",
                     type: 'question',
                     showCancelButton: true,
                     confirmButtonText: ' Yes, Confirm ! ',
@@ -245,7 +251,7 @@
                         document.getElementById("SAVForm").submit();
                         swalWithBootstrapButtons.fire(
                             ' Submitted ! ',
-                            ' Item Entry Successful...',
+                            ' Product Entry Successful...',
                             'success'
                         )
                     {{-- $.ajax({
@@ -267,7 +273,7 @@
                         result.dismiss === Swal.DismissReason.cancel
                     ) { swalWithBootstrapButtons.fire(
                         ' Canceled ',
-                        ' Item Entry Cancel.. ',
+                        ' Product Entry Cancel.. ',
                         'error'
                     )};
                 });

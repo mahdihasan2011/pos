@@ -65,7 +65,7 @@
                                     <th>Supplier</th>
                                     <th class="text-center">Quantity</th>
                                     <th class="text-right">SubTotal (Tk.)</th>
-                                    <th class="text-right">Discount (Tk.)</th>
+                                    <th class="text-right">Discount</th>
                                     <th class="text-right">Payable (Tk.)</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -75,16 +75,12 @@
                                 @foreach ($purchases as $data)
                                 <tr>
                                     <td>{{ $i++ }}.</td>
-                                    <td>{{ $data->date }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($data->date)->isoFormat('D/MM/YYYY') }}</td>
                                     <td>{{ $data->purchase_no }}</td>
-                                    <td>
-                                        @if ($data->supplier != null) {{ $data->supplier }}
-                                        @else Cash
-                                        @endif
-                                    </td>
+                                    <td>{{ !empty($data->supplier) ? $data->supplier : 'Cash Purchase' }}</td>
                                     <td class="text-center">{{ $data->total_qty }}</td>
                                     <td class="text-right">{{ $data->sub_total }}</td>
-                                    <td class="text-right">{{ $data->sub_total - $data->payable }}</td>
+                                    <td class="text-right">{{ $data->discount }} {{ $data->disc_type == 1 ? '%' : '৳' }}</td>
                                     <td class="text-right">{{ $data->payable }}</td>
                                     <td class="text-center">
                                         <a href="{{ route('purchase.report.big.invoice',
@@ -106,8 +102,8 @@
                                     <td class="text-right" colspan="4"><b>Total : </b></td>
                                     <td class="text-center"><b>{{ $tQty }}</b></td>
                                     <td class="text-right"><b>{{ $tSub }}</b></td>
-                                    <td class="text-right"><b>{{ $tPay }}</b></td>
                                     <td class="text-right"><b>{{ $tDis }}</b></td>
+                                    <td class="text-right"><b>{{ $tPay }}</b></td>
                                     <td class="text-right"></td>
                                 </tr>
                             </tfoot>

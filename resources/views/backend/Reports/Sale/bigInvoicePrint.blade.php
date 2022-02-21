@@ -35,9 +35,7 @@
                   <div class="row">
                     <div class="col-lg-12">
                       <h4>
-                        @foreach ($company as $data)
-                        <img src="{{ asset($data->logo) }}" alt="Company Logo" style="height: 50px;">
-                        {{ $data->title }}
+                        <img src="{{ asset($company->logo) }}" alt="Company Logo" style="height: 50px;">
                       </h4>
                     </div>
                   </div>
@@ -45,36 +43,29 @@
                     <div class="col-sm-4 invoice-col">
                         From
                         <address>
-                            <strong>{{ $data->name }}</strong><br>
-                            @if ($data->address != null) {{ $data->address }} @endif<br>
-                            @if ($data->phone != null) Phone : {{ $data->phone }} @endif<br>
-                            @if ($data->email != null) Email : {{ $data->email }} @endif
-                            @if ($data->website != null) Website : {{ $data->website }} @endif
+                          <strong>{{ !empty($company->title) ? $company->title : "" }}</strong><br>
+                          {{ !empty($company->address) ? "Address : ".$company->address : "" }}<br>
+                          {{ !empty($company->phone) ? "Phone : ".$company->phone : "" }}<br>
+                          {{ !empty($company->email) ? "Email : ".$company->email : "" }}<br>
+                          {{ !empty($company->website) ? "Website : ".$company->website : "" }}
                         </address>
-                        @endforeach
                     </div>
-                    @foreach ($sales as $data)
                     <div class="col-sm-4 invoice-col">
                         To
                         <address>
-                            @if ($data->customer != null) <strong>{{ $data->customer }}</strong><br>
-                            @if ($data->address != null) {{ $data->address }} @endif<br>
-                            @if ($data->phone != null) Phone : {{ $data->phone }} @endif<br>
-                            @if ($data->email != null) Email : {{ $data->email }} @endif
-                            @else <b>Cash</b>
-                            @endif
+                          <strong>{{ !empty($sales->customer) ? $sales->customer : "Guest Sale" }}</strong><br>
+                          {{ !empty($sales->address) ? "Address : ".$sales->address : "" }}<br>
+                          {{ !empty($sales->phone) ? "Phone : ".$sales->phone : "" }}<br>
+                          {{ !empty($sales->email) ? "Email : ".$sales->email : "" }}<br>
                         </address>
                     </div>
                     <div class="col-sm-4 invoice-col">
-                        <b>Invoice No # {{ $data->sale_no }}</b><br>
-                        <br>
-                        <b>Sale Date :</b> {{ $data->date }}<br>
-                        <b>Bill Account : </b> {{ $data->payable }} Tk.
+                        <b>Invoice No # {{ $sales->sale_no }}</b><br>
+                        <b>Sale Date :</b> {{ \Carbon\Carbon::parse($sales->date)->isoFormat('D/MM/YYYY') }}<br>
+                        <b>Bill Account : {{ $sales->payable }} Tk.</b>
                     </div>
-                    @break
-                    @endforeach
                   </div>
-    
+
                   <div class="row">
                     <div class="col-lg-12 table-responsive">
                       <table class="table table-striped">
@@ -102,66 +93,75 @@
                       </table>
                     </div>
                   </div>
-    
+
                   <div class="row">
                     <div class="col-lg-7">
-                      @foreach ($company as $data)
-                      @if ($data->invoice_note != null)
+                      @if ($company->invoice_note != null)
                       <p class="lead">Company Policy :</p>
                       <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
-                        {{ $data->invoice_note }}
+                        {{ $company->invoice_note }}
                       </p>
                       @endif
-                      @endforeach
                     </div>
                     <div class="col-lg-5">
                       <div class="table-responsive">
-                        @foreach ($sales as $data)
                         <table class="table">
                           <tr>
                             <th style="width:50%">Total Quantity :</th>
-                            <td>{{ $data->total_qty }}</td>
+                            <td>{{ $sales->total_qty }}</td>
                           </tr>
                           <tr>
                             <th>SubTotal : (Tk.)</th>
-                            <td>{{ $data->sub_total }}</td>
+                            <td>{{ $sales->sub_total }}</td>
                           </tr>
+                          @if (!empty($sales->discount))
                           <tr>
                             <th>Discount :</th>
                             <td>
-                                {{ $data->discount }}
-                                @if ($data->disc_type = 1) %
-                                @elseif ($data->disc_type = 2) Tk
-                                @endif
+                                {{ $sales->discount }}
+                                {{ ($sales->disc_type = 1) ? '%' : 'Tk' }}
                             </td>
                           </tr>
+                          @endif
+                            @if (!empty($sales->vat))
+                                <tr>
+                                    <th>Vat ({{ $vat }}%) : (Tk.)</th>
+                                    <td>{{ $sales->vat }}</td>
+                                </tr>
+                            @endif
+                            @if (!empty($sales->payable))
                           <tr>
                             <th>Payable : (Tk.)</th>
-                            <td>{{ $data->payable }}</td>
+                            <td>{{ $sales->payable }}</td>
                           </tr>
+                          @endif
+                          @if (!empty($sales->paid))
                           <tr>
                             <th>Paid : (Tk.)</th>
-                            <td>{{ $data->paid }}</td>
+                            <td>{{ $sales->paid }}</td>
                           </tr>
+                          @endif
+                          @if (!empty($sales->due))
                           <tr>
                             <th>Due : (Tk.)</th>
-                            <td>{{ $data->due }}</td>
+                            <td>{{ $sales->due }}</td>
                           </tr>
+                          @endif
+                          @if (!empty($sales->return))
                           <tr>
                             <th>Return : (Tk.)</th>
-                            <td>{{ $data->return }}</td>
+                            <td>{{ $sales->return }}</td>
                           </tr>
+                          @endif
                         </table>
-                        @break
-                        @endforeach
                       </div>
                     </div>
                     <div class="col-lg-12 navbar-fixed-bottom">
                       <div style="float:left;">
-                        Develop By {{ config('app.url') }}
+                        Developed By https://mahdi.infrequentbd.com
                       </div>
                       <div style="float:right;">
-                        <?php echo "Printing Time: " . date("D, d M Y h:i:s a"); ?>
+                        @php echo "Printing Time: " . date("D, d M Y h:i:s a"); @endphp
                       </div>
                     </div>
                   </div>
@@ -173,8 +173,8 @@
 
 </div>
 
-  <script type="text/javascript"> 
+  <script type="text/javascript">
     window.addEventListener("load", window.print());
   </script>
-  
+
 @endsection

@@ -2,46 +2,11 @@
 <html lang="en">
 <head>
     <style type="text/css">
-        .text {
+        .invo {
             text-align: center;
             font-family: monospace;
+            width: 340px;
         }
-
-        .left-align {
-            float: left;
-        }
-
-        .tbl {
-            padding-right: 10px;
-            width: 10px;
-            float: left;
-            text-align: right;
-            font-family: monospace;
-        }
-
-        .tbl1 {
-            padding-left: 10px;
-            padding-right: 10px;
-            width: 100px;
-            float: left;
-            text-align: left;
-            font-family: monospace;
-        }
-
-        .tbl2 {
-            width: 60px;
-            float: left;
-            text-align: right;
-            font-family: monospace;
-        }
-
-        .tbl3 {
-            width: 40px;
-            float: left;
-            text-align: center;
-            font-family: monospace;
-        }
-
         @media print {
             @page {
                 size: auto;
@@ -51,106 +16,120 @@
 </head>
 
 <body onload="window.print(); window.history.back()" style="width: 350px; min-height: 350px;">
-        @foreach ($company as $data)
-        <div class="text" style="width: 320px;">
-            <h3>{{ $data->title }}</h3> 
-            @if ($data->phone != null) Phone : {{ $data->phone }} @endif<br>
-            @if ($data->email != null) Email : {{ $data->email }} @endif<br>
-            @if ($data->address != null) Address : {{ $data->address }} @endif<br>
-            @if ($data->website != null) Website : {{ $data->website }} @endif
-        </div>
-        @endforeach
-        @foreach($purchases as $data)
-        <div class="text" style="width: 320px;">
-            <hr>
-            <div class="center-align">
-                Invoice No # <b>{{ $data->purchase_no }}</b><br>
-                Date : {{ $data->date }}<br>
-            </div>
-        </div>
-        <div class="text" style="width: 320px;">
-            <hr>
-          <!--   <div style="float: left; text-align: left;">
-                Name: 
-                @if ($data->supplier != null) {{ $data->supplier }}<br>
-                @if ($data->phone != null) Phone : {{ $data->phone }} @endif<br>
-                @else Cash
-                @endif
-            </div> -->
-            @if ($data->supplier != null)
-            <div style="float: left; text-align: left;">
-                Name : {{ $data->supplier }} <br>
-                Phone : {{ $data->phone }} 
-            </div><br><br>
-            @else Purchase on Cash
+        <div class="invo">
+            @if ($company->title != null)
+                <div style="font-size: 20px;">{{ $company->title }}</div>
+            @endif
+            @if ($company->address != null)
+                <div>Address : {{ $company->address }}</div>
+            @endif
+            @if ($company->phone != null)
+                <div>Phone : {{ $company->phone }}</div>
+            @endif
+            @if ($company->email != null)
+                <div>Email : {{ $company->email }}</div>
+            @endif
+            @if ($company->website != null)
+                <div>Website : {{ $company->website }}</div>
             @endif
         </div>
-         
-        <div class="text" style="width: 320px;">
-            <hr>
-            <div class="tbl">SL.</div>
-            <div class="tbl1">Description</div>
-            <div class="tbl3">Qty.</div>
-            <div class="tbl2">Cost</div>
-            <div class="tbl2">Total</div>
-            <br>
-            <hr>
-            <?php $i = 1; ?>
-            @foreach($purchase_dt as $item)
-                <div class="tbl">{{ $i++ }}.</div>
-                <div class="tbl1" style="font-size: 12px;">
-                    {{ $item->name }} ({{$item->code}})
-                </div>
-                <div class="tbl3">{{ $item->quantity }}</div>
-                <div class="tbl2">{{ $item->cost }}</div>
-                <div class="tbl2">{{ $item->total }}</div>
-                <br><br>
-            @endforeach
-            <hr>
-            <div class="text" style="width: 300px;">
-                <div>
-                    <div class="text" style="float: right;">Total Quantity
-                        : {{ $data->total_qty  }}
-                    </div><br>
-                    <div class="text" style="float: right;">SubTotal
-                        : {{ $data->sub_total  }} Tk
-                    </div><br>
-                    <div class="text" style="float: right;">Discount 
-                        : {{ $data->discount }} 
-                        @if ($data->disc_type = 1) %
-                        @elseif ($data->disc_type = 2) Tk
-                        @endif
-                    </div><br>
-                    <div class="text" style="float: right;">Payable
-                        : {{ $data->payable  }} Tk</div>
-                    <br>
-                    <div class="text" style="float: right;">Paid
-                        : {{ $data->paid  }} Tk
-                    </div><br>
-                    <div class="text" style="float: right;">Return
-                        : {{ $data->return  }} Tk
-                    </div><br>
-                    <div class="text" style="float: right;">Due
-                        : {{ $data->due  }} Tk
-                    </div><br>
-                </div>
-                {{--  <div class="col-md-12">
-                    <h4 style="text-align: center;">Develop By www.mahdipos.infinitearc.com</h4>
-                </div>  --}}
+        <hr>
+        <div class="invo">
+            <table>
+            <tr>
+                <th style="text-align: left;">Invoice No # {{ $purchase->purchase_no }} | </th>
+                <td style="text-align: right;">Date : {{ date_format(new DateTime($purchase->date), 'd/M/Y') }}</td>
+            </tr>
+            </table>
+            @if ($purchase->supplier != null)
+            <div style="text-align: left;">
+                Customer : {{ $purchase->supplier }}
             </div>
+                @if ($purchase->phone != null)
+                <div style="text-align: left;">
+                    Phone : {{ $purchase->phone }}
+                </div>
+                @endif
+            @else
+            <div style="text-align: center;">
+                ============ Cash Purchase ============
+            </div>
+            @endif
         </div>
-        <br>
-        <div class="navbar-fixed-bottom text" style="text-align: left;">
-            Develop By {{ config('app.url') }}<br>
-            <?php echo "Printing Time: " . date("D, d M Y h:i:s a"); ?><br>
-            {{--  <?php echo "Printing Time: " . date("l, d F Y h:i:s a"); ?><br>  --}}
-            {{--  Print Time : <script>
-                            document.write(new Date().toLocaleString()); 
-                            document.write(new Date().toDateString()); 
-                            document.write(new Date().toTimeString());
-                        </script>  --}}
+        <hr>
+        <table class="invo">
+            <thead>
+                <tr>
+                    <th style="text-align: left;">SL.</th>
+                    <th style="text-align: left;">Description</th>
+                    <th>Qty.</th>
+                    <th>Price</th>
+                    <th style="text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $i = 1; ?>
+                @foreach($purchase_dt as $item)
+                <tr>
+                    <td style="text-align: left;">{{ $i++ }}.</td>
+                    <td style="text-align: left;">{{ $item->name }} ({{ $item->code }})</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td style="text-align: right; padding-right: 10px; padding-left: 5px;">
+                        {{ $item->cost }}
+                    </td>
+                    <td style="text-align: right;">{{ $item->total }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <hr>
+        <table class="invo">
+            <tr>
+                <td style="text-align: right; width: 70%;">Total Quantity : </td>
+                <td style="text-align: right; width: 30%;"> {{ $purchase->total_qty  }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">SubTotal : </td>
+                <td style="text-align: right;"> {{ $purchase->sub_total  }} ৳</td>
+            </tr>
+            @if (!empty($purchase->discount))
+            <tr>
+                <td style="text-align: right;">Discount : </td>
+                <td style="text-align: right;">
+                    {{ $purchase->discount }}
+                    {{ ($purchase->disc_type = 1) ? '%' : 'Tk' }}
+                </td>
+            </tr>
+            @endif
+            @if (!empty($purchase->payable))
+            <tr>
+                <td style="text-align: right;">Payable : </td>
+                <td style="text-align: right;"> {{ $purchase->payable  }} ৳</td>
+            </tr>
+            @endif
+            @if (!empty($purchase->paid))
+            <tr>
+                <td style="text-align: right;">Paid : </td>
+                <td style="text-align: right;"> {{ $purchase->paid  }} ৳</td>
+            </tr>
+            @endif
+            @if (!empty($purchase->return))
+            <tr>
+                <td style="text-align: right;">Return : </td>
+                <td style="text-align: right;"> {{ $purchase->return  }} ৳</td>
+            </tr>
+            @endif
+            @if (!empty($purchase->due))  
+            <tr>
+                <td style="text-align: right;">Due : </td>
+                <td style="text-align: right;"> {{ $purchase->due  }} ৳</td>
+            </tr>
+            @endif
+        </table>
+        <hr>
+        <div class="invo">
+            Developed By https://mahdi.infrequentbd.com <br>
+            @php echo "Printing Time: " . date("D, d M Y h:i:s a"); @endphp
         </div>
-        @break
-        @endforeach
 </body>
 </html>

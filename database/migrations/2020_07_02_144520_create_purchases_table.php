@@ -16,7 +16,7 @@ class CreatePurchasesTable extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->string('purchase_no');
-            $table->date('date')->nullable();
+            $table->dateTime('date')->nullable();
             $table->string('supplier')->nullable();
             $table->decimal('amount', 10,2)->nullable();
             $table->integer('total_qty')->nullable();

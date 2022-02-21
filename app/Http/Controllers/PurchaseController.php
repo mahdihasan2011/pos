@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Company;
 use App\Model\Product;
 use App\Model\Purchase;
 use App\Model\PurchaseItem;
+use App\Model\Setting;
 use App\Model\Supplier;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class PurchaseController extends Controller
 {
@@ -17,68 +20,52 @@ class PurchaseController extends Controller
         $this->middleware('auth');
     }
 
-    public function item(Request $request)
+    public function index(Request $request)
     {
         $date       = new DateTime("now");
-        $data       = $date->format('ymd');
-        if ($last   = Purchase::get()->last()) {
-            $sl     = $last->id;
-        } else {
-            $sl     = 0;
-        }
-        $po         = 'P';
-        $s          = $sl + 1 ;
-        $purchase   = $po . $data . $s ;
-        $purchases  = $po . $data . $sl ;
+        $today      = $date->format('Y-m-d');
+        $last_id    = Purchase::get()->last() ? Purchase::get()->last()->id : 0;
+        $initial    = Setting::first() ? Setting::first()->purchase_code_initial : "";
+        $serial     = $last_id + 1;
+        $invoice_no = $initial . $date->format('ymd') . $serial;
         $products   = Product::orderBy('name', 'ASC')->get();
-        $suppliers  = Supplier::orderBy('id', 'DESC')->get();
+        $users      = Supplier::orderBy('id', 'DESC')->get();
         $carts      = DB::table('carts')->orderBy('id', 'DESC')->get();
-        $tqty       = $carts->sum('quantity');
-        $subt       = $carts->sum('total');
-        return view('backend.Purchase.purchase',
-            compact('purchase','products','suppliers','carts','purchases','tqty','subt'));
-    }
-
-    public function supplier_details(Request $request)
-    {
-        $data = Supplier::where('id', $request->id)->get();
-        return response()->json($data);
+        $tQty       = $carts->sum('quantity');
+        $subTotal   = $carts->sum('total');
+        $title      = "Purchase Terminal";
+        Session::forget('purchase_no');
+        return view('backend.Pos.purchase',
+            compact('invoice_no','today','products','users','carts','tQty','subTotal','title'));
     }
 
     public function supplier_store(Request $request)
     {
-        $data           = new Supplier();
-        $data->name     = $request->name;
-        $data->phone    = $request->phone;
-        $data->email    = $request->email;
-        $data->category = $request->category;
-        $data->balance  = $request->balance;
-        $data->address  = $request->address;
-        $data->save();
-        return redirect()->back();
+        $request->validate([
+            'name'  => 'required',
+        ]);
+        $data = Supplier::create([
+            'name'      => $request->name,
+            'phone'     => $request->phone,
+            'email'     => $request->email,
+            'category'  => $request->category,
+            'balance'   => $request->balance,
+            'address'   => $request->address
+        ]);
+        if ($data) {
+            return response()->json(array(
+                'info'  =>  $data,
+                'message'  =>  "Supplier Information Saved Successfully",
+            ));
+        } else {
+            return response()->json(array(
+                'message'  =>  "Supplier Not Saved",
+            ));
+        }
     }
 
     public function item_add(Request $request)
     {
-        // if ($last   = DB::table('carts')->orderBy('id', 'DESC')->first()) {
-        //     $sl     = $last->sl;
-        //     $qty    = $last->quantity;
-        //     $tl     = $last->total;
-        // } else {
-        //     $sl     = 0;
-        //     $qty    = 0;
-        //     $tl     = 0;
-        // }
-        // $data = array(
-        //     'sl'        => $sl + 1,
-        //     'name'      => $products->name,
-        //     'code'      => $products->code,
-        //     'quantity'  => 1,
-        //     'price'     => $products->price,
-        //     'total'     => $tl + $products->price,
-        // );
-        // $insert = DB::table('carts')->insert($data);
-
         $products   = Product::where('id', $request->id)->first();
         $pcode      = $products->code;
         $cart       = DB::table('carts')->where('code', $pcode)->first();
@@ -90,30 +77,25 @@ class PurchaseController extends Controller
                 'price'     => $products->purchase_price,
                 'total'     => $products->purchase_price,
             );
-            $insert = DB::table('carts')->insert($data);
+            DB::table('carts')->insert($data);
         } else {
-            $insert = DB::table('carts')
+            DB::table('carts')
                         ->where('code', $pcode)
                         ->increment('quantity', 1);
             $cart   = DB::table('carts')->where('code', $pcode)->first();
             $qty    = $cart->quantity;
             $price  = $cart->price;
             $total  = $price * $qty;
-            $insert = DB::table('carts')
+            DB::table('carts')
                         ->where('code', $pcode)
                         ->update(['total' => $total]);
-            // $insert = DB::table('carts')
-            //             ->where('code', $pcode)
-            //             ->increment('total', $total);
         }
-        // $update = DB::table('carts')
-        //             ->where('code', $pcode)
-        //             ->update(['total' => $newCost]);
         $tqty   = DB::table('carts')->sum('quantity');
         $subt   = DB::table('carts')->sum('total');
         return response()->json([
-                'tqty'  => $tqty,
-                'subt'  => $subt,
+                'tqty'      => $tqty,
+                'subt'      => $subt,
+                'message'   => "Product added to cart Successfully.",
             ]);
     }
 
@@ -123,39 +105,30 @@ class PurchaseController extends Controller
         $tqty   = DB::table('carts')->sum('quantity');
         $subt   = DB::table('carts')->sum('total');
         return response()->json([
-                'tqty'  => $tqty,
-                'subt'  => $subt,
-            ]);
-    }
-
-    public function item_delete(Request $request)
-    {
-        DB::table('carts')->where('id', $request->id)->delete();
-        $tqty   = DB::table('carts')->sum('quantity');
-        $subt   = DB::table('carts')->sum('total');
-        return response()->json([
-                'tqty'  => $tqty,
-                'subt'  => $subt,
+                'tqty'      => $tqty,
+                'subt'      => $subt,
+                'message'   => "Product removed from cart",
             ]);
     }
 
     public function item_quantity(Request $request)
     {
-        $update = DB::table('carts')
+        DB::table('carts')
                     ->where('code', $request->id)
                     ->update(['quantity' => $request->qty]);
         $cart   = DB::table('carts')->where('code', $request->id)->first();
         $price  = $cart->price;
         $qty    = $cart->quantity;
         $total  = $price * $qty;
-        $update = DB::table('carts')
+        DB::table('carts')
                     ->where('code', $request->id)
                     ->update(['total' => $total]);
         $tqty   = DB::table('carts')->sum('quantity');
         $subt   = DB::table('carts')->sum('total');
         return response()->json([
-                'tqty'  => $tqty,
-                'subt'  => $subt,
+                'tqty'      => $tqty,
+                'subt'      => $subt,
+                'message'   => "Product quantity updated Successfully.",
             ]);
     }
 
@@ -171,15 +144,18 @@ class PurchaseController extends Controller
         $tqty   = DB::table('carts')->sum('quantity');
         $subt   = DB::table('carts')->sum('total');
         return response()->json([
-                'tqty'  => $tqty,
-                'subt'  => $subt,
+                'tqty'      => $tqty,
+                'subt'      => $subt,
+                'message'   =>  "Product Price Updated Successfully",
             ]);
     }
 
     public function cart_clear(Request $request)
     {
         DB::table('carts')->truncate();
-        return redirect()->back();
+        return response()->json(array(
+            'message'   => "All product removed from cart successfully",
+        ));
     }
 
     public function discount(Request $request)
@@ -201,6 +177,7 @@ class PurchaseController extends Controller
                 'subt'      => $subt,
                 'disc'      => $disc,
                 'paid'      => $paid,
+                'message'   => "Discount calculated successfully",
             ]);
     }
 
@@ -223,7 +200,8 @@ class PurchaseController extends Controller
                 'subt'      => $subt,
                 'disc'      => $disc,
                 'paid'      => $paid,
-            ]);
+                'message'   => "Discount calculated successfully",
+        ]);
     }
 
     public function paid_amount(Request $request)
@@ -241,17 +219,22 @@ class PurchaseController extends Controller
         return response()->json(array(
                 'due'       => $due,
                 'return'    => $return,
+                'message'   => "Paid amount calculated successfully",
             ));
     }
 
-
     public function item_store(Request $request)
     {
-        $today = new DateTime("now");
-        $data  = new Purchase();
-        $data->purchase_no      = $request->purchase_no;
-        $data->supplier         = $request->supplier;
-        $data->date             = $today;
+        $date       = new DateTime("now");
+        $today      = $date->format('Y-m-d');
+        $last_id    = Purchase::get()->last() ? Purchase::get()->last()->id : 0;
+        $initial    = Setting::first() ? Setting::first()->purchase_code_initial : "";
+        $serial     = $last_id + 1;
+        $invoice_no = $initial . $date->format('ymd') . $serial;
+        $data                   = new Purchase();
+        $data->purchase_no      = $request->invoice_no ? $request->invoice_no : $invoice_no;
+        $data->supplier         = !empty($request->supplier) ? $request->supplier : 'Cash';
+        $data->date             = $request->date ? $request->date : $today;
         $data->amount           = $request->amount;
         $data->total_qty        = $request->total_qty;
         $data->sub_total        = $request->sub_total;
@@ -277,7 +260,7 @@ class PurchaseController extends Controller
         // }
         $cart = DB::table('carts')
                     ->leftJoin('products','carts.code','products.code')
-                    ->select('carts.*','products.sale_price')
+                    ->select('carts.*','products.sale_price','products.id as product_id')
                     ->get();
         if(empty($cart)) {
             return response()->json(array(
@@ -287,24 +270,23 @@ class PurchaseController extends Controller
             if ($data->save()) {
                 foreach ($cart as $item) {
                     DB::table('purchase_items')->insert([
-                        'name' => $item->name,
-                        'code' => $item->code,
-                        'purchase_no' => $request->purchase_no,
-                        'date' => $today,
-                        'cost' => $item->price,
-                        'quantity' => $item->quantity,
-                        'total' => $item->total
+                        'name'          => $item->name,
+                        'product_id'    => $item->product_id,
+                        'purchase_no'   => $request->invoice_no ? $request->invoice_no : $invoice_no,
+                        'date'          => $request->date ? $request->date : $today,
+                        'cost'          => $item->price,
+                        'quantity'      => $item->quantity,
+                        'total'         => $item->total
                     ]);
                     $stdata = array(
-                        'code' => $item->code,
-                        'name' => $item->name,
-                        'quantity' => $item->quantity,
-                        'cost' => $item->price,
-                        'price' => $item->sale_price,
+                        'product_id'    => $item->product_id,
+                        'quantity'      => $item->quantity,
+                        'cost'          => $item->price,
+                        'price'         => $item->sale_price,
                     );
-                    $exist = DB::table('stocks')->where('code', $item->code)->first();
+                    $exist = DB::table('stocks')->where('product_id', $item->product_id)->first();
 //                    if ($exist == null)//if doesn't exist: create
-                    if (DB::table('stocks')->where('code', $item->code)->doesntExist())
+                    if (DB::table('stocks')->where('product_id', $item->product_id)->doesntExist())
                     {
                         DB::table('stocks')->insert($stdata);
                     } else //if exist: update
@@ -312,21 +294,23 @@ class PurchaseController extends Controller
                         //if purchase cost is same as stock cost
                         if ($exist->cost == $item->sale_price) {
                             DB::table('stocks')
-                                ->where('code', $item->code)
+                                ->where('product_id', $item->product_id)
                                 ->increment('quantity', $item->quantity);
                         } //if purchase cost is not same as stock cost
                         else {
-                            $newCost = ($exist->cost + $item->sale_price) / 2;
+//                            $newCost = ($exist->cost + $item->sale_price) / 2;
+                            $newCost = (($exist->cost * $exist->quantity) + ($item->sale_price * $item->quantity)) / ($exist->quantity * $item->quantity);
                             DB::table('stocks')
-                                ->where('code', $item->code)
+                                ->where('product_id', $item->product_id)
                                 ->increment('quantity', $item->quantity);
                             DB::table('stocks')
-                                ->where('code', $item->code)
+                                ->where('product_id', $item->product_id)
                                 ->update(['cost' => $newCost]);
                         }
                     }
                 }
                 DB::table('carts')->truncate();
+                Session::put('purchase_no', $data->purchase_no);
                 return response()->json(array(
                     'message' => 'Product Purchase Successful',
                 ));
@@ -338,5 +322,18 @@ class PurchaseController extends Controller
         }
     }
 
+    public function mini_invoice(Request $request)
+    {
+        $company    = Company::first();
+        $purchase   = Purchase::where('purchase_no', $request->id)
+                        ->leftJoin('suppliers','purchases.supplier','suppliers.id')
+                        ->select('purchases.*','suppliers.name as supplier','suppliers.phone','suppliers.email','suppliers.address')
+                        ->first();
+        $purchase_dt   = PurchaseItem::where('purchase_no', $request->id)
+                        ->leftJoin('products', 'purchase_items.product_id', 'products.id')
+                        ->select('purchase_items.*','products.code')
+                        ->get();
+        return view('backend.Reports.Purchase.miniInvoicePrint', compact('company','purchase','purchase_dt'));
+    }
 
 }

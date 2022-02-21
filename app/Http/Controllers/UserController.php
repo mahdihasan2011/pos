@@ -9,9 +9,15 @@ use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {
         $role = Role::orderBy('id','DESC')->where('name', '!=', 'superadmin')->get();
@@ -148,4 +154,85 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function image_upload(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            // $extension = $file->getClientOriginalExtension();
+            // $file_name = $file->getClientOriginalName();
+            // $origin_name = Auth::user()->name;
+            // $origin_name = str_replace(' ', '_', $origin_name);
+            $file_name = uniqid().$file->getClientOriginalName();
+            $uploadPath = 'public/uploads/';
+            $file->move($uploadPath,$file_name);
+            return $uploadPath.$file_name;
+        }
+        return '';
+        // if (!empty($request->file('file_name'))) {
+        //     foreach ($request->file('file_name') AS $key => $files) {
+        //         $extension = $files->getClientOriginalExtension();
+        //         $origin_name = pathinfo($files->getClientOriginalName(), PATHINFO_FILENAME);
+        //         $origin_name = str_replace(' ', '_', $origin_name);
+        //         $origin_name = substr($origin_name, 0,20);
+        //         $fileName = $origin_name."_attach_nX_".round(microtime(true) * 10)."_".($key+1).'.'. $extension;
+        //         $attachment = new Attachment();
+        //         $attachment->file_name = $fileName;
+        //         $attachment->reference_number = $reference_number;
+        //         $attachment->attachment_date = date('Y-m-d');
+        //         $attachment->uploaded_by = Auth::user()->id;
+        //         $attachment->save();
+        //         //$files->move($docDestPath, $fileName);
+
+        //         $fileContent = File::get($files->getRealPath());
+        //         Storage::disk('custom_storage')->put($fileName, $fileContent);
+
+        //         /*$image                   =       $files;
+        //         $img                     =       ImageResizer::make($image->path());
+
+        //         // --------- [ Resize Image ] ---------------
+        //         $imgInfo = $img->resize(150, 100, function ($constraint) {
+        //             $constraint->aspectRatio();
+        //         })->save($docDestPath.'/'.$fileName);*/
+        //     }
+        // }
+    }
+
+    public function profile_image(Request $request)
+    {
+        // $validation = Validator::make(
+        //     $request->all(),
+        //     [
+        //         'image' => 'required',
+        //     ],
+        //     [
+        //         'image.required' => 'Profile Image is required.',
+        //     ]
+        // );
+        // if($validation->passes()) {
+        //     User::where('id', Auth::user()->id)->update([
+        //         'image' =>  $request->image,
+        //     ]);
+        //     return response()->json([   
+        //         'type'  =>  'success',
+        //         'data'  =>  'Profile Image Uploaded Successfully'  
+        //     ]);
+        // } else {
+        //     return response()->json([   
+        //         'type'  =>  'error',
+        //         'data'  =>  'Profile Image Not Uploaded' 
+        //     ]);
+        // }
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+            $file_name = uniqid().$file->getClientOriginalName();
+            $uploadPath = 'public/profile/';
+            $file->move($uploadPath,$file_name);
+            $image = $uploadPath.$file_name;
+            User::where('id', Auth::user()->id)->update([  'image' =>  $image  ]);
+            return $image;
+        }
+        return '';
+    }
+
 }

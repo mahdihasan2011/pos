@@ -59,7 +59,8 @@
                                     <th>Customer</th>
                                     <th class="text-center">Quantity</th>
                                     <th class="text-right">SubTotal (Tk.)</th>
-                                    <th class="text-right">Discount (Tk.)</th>
+                                    <th class="text-right">Discount</th>
+                                    <th class="text-right">Vat ({{ $vat }}%) (Tk.)</th>
                                     <th class="text-right">Payable (Tk.)</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -69,16 +70,13 @@
                                 @foreach ($sales as $data)
                                 <tr>
                                     <td>{{ $i++ }}.</td>
-                                    <td>{{ $data->date }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($data->date)->isoFormat('D/MM/YYYY') }}</td>
                                     <td>{{ $data->sale_no }}</td>
-                                    <td>
-                                        @if ($data->customer != null) {{ $data->customer }}
-                                        @else Cash
-                                        @endif
-                                    </td>
+                                    <td>{{ !empty($data->customer) ? $data->customer : 'Guest Sale' }}</td>
                                     <td class="text-center">{{ $data->total_qty }}</td>
                                     <td class="text-right">{{ $data->sub_total }}</td>
-                                    <td class="text-right">{{ $data->sub_total - $data->payable }}</td>
+                                    <td class="text-right">{{ $data->discount }} {{ $data->disc_type == 1 ? '%' : '৳' }}</td>
+                                    <td class="text-right">{{ $data->vat }}</td>
                                     <td class="text-right">{{ $data->payable }}</td>
                                     <td class="text-center">
                                         <a href="{{ route('sales.report.big.invoice',
@@ -97,12 +95,13 @@
                             </tbody>
                              <tfoot>
                                 <tr>
-                                    <td class="text-right" colspan="4"><b>Total : </b></td>
-                                    <td class="text-center"><b>{{ $tQty }}</b></td>
-                                    <td class="text-right"><b>{{ $tSub }}</b></td>
-                                    <td class="text-right"><b>{{ $tPay }}</b></td>
-                                    <td class="text-right"><b>{{ $tDis }}</b></td>
-                                    <td class="text-right"></td>
+                                    <th class="text-right" colspan="4">Total : </th>
+                                    <th class="text-center">{{ $tQty }}</th>
+                                    <th class="text-right">{{ $tSub }}</th>
+                                    <th class="text-right">{{ $tDis }}</th>
+                                    <th class="text-right">{{ $tVat }}</th>
+                                    <th class="text-right">{{ $tPay }}</th>
+                                    <th class="text-right"></th>
                                 </tr>
                             </tfoot>
                         </table>

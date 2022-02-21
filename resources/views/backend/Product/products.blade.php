@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title','Item List')
+@section('title','Product List')
 @section('content')
 <div class="content-wrapper">
     <section class="content pt-2">
@@ -7,13 +7,12 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">All Item List </h3>
-                        {{-- <button class="btn btn-primary btn-sm" type="button" style="float:right;"
-                            data-toggle="modal" data-target="#add-modal-lg">Item Entry
-                        </button> --}}
+                        <h3 class="card-title">All Product List </h3>
+                        @can('product_create')
                         <a href="{{ route('product.entry') }}" class="btn btn-primary btn-sm float-right">
-                            <i class="fas fa-share"></i> Item Entry
+                            <i class="fas fa-share"></i> Product Entry
                         </a>
+                        @endcan
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped">
@@ -26,10 +25,10 @@
                                     <th>Brand</th>
                                     <th>Color</th>
                                     <th>Size</th>
-                                    <th>P. Price</th>
+                                    <th>P.&nbsp;Price</th>
                                     <th>Cost</th>
                                     <th>Profit</th>
-                                    <th>S. Price</th>
+                                    <th>S.&nbsp;Price</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -49,13 +48,17 @@
                                     <td>{{ $data->profit }}</td>
                                     <td>{{ $data->sale_price }}</td>
                                     <td class="project-actions text-center">
-                                        <button type="button" value="{{ $data->id }}" class="btn btn-primary
-                                        editProduct btn-xs" data-toggle="modal" data-target="#edit-modal-lg" disabled>
+                                        @can('product_update')
+                                        <button type="button" value="{{ $data->id }}" class="btn btn-primary editProduct btn-xs"
+                                            data-toggle="modal" data-target="#edit-modal-lg" dis abled>
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        @endcan
+                                        @can('product_delete')
                                         <button class="btn btn-danger NewDelete btn-xs" value="{{ $data->id }}">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach
@@ -72,14 +75,13 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Item : Edit</h5>
-                    <small style="color:gray; font-size: 11px; padding-top: 10px;">&nbsp; ( * This Fields Must Be Filled.)
-                    </small>
+                    <h5 class="modal-title">Product : Edit</h5>
+                    <small style="color:gray; font-size: 11px; padding-top: 10px;">&nbsp; ( * This Fields Must Be Filled.)</small>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ route('product.update') }}" method="POST" enctype="multipart/form-data">@csrf
+                <form id="UPDATE">@csrf
                     <div class="modal-body">
                         <div class="row">
                             <input name="id" id="pid" class="pid" type="hidden"/>
@@ -95,7 +97,7 @@
                             <div class="col-lg-3 form-group">
                                 <label for="brand">Brand </label>
                                 <select class="brand form-control form-control-sm select2" data-placeholder="Select Brand" name="brand">
-                                    <option value="00">Select Brand</option>
+                                    <option value="0">Select Brand</option>
                                     @foreach ($brand as $data)
                                     <option value="{{ $data->id }}">{{ $data->name }}</option>
                                     @endforeach
@@ -104,7 +106,7 @@
                             <div class="col-lg-3 form-group">
                                 <label for="size">Size </label>
                                 <select class="size form-control form-control-sm select2" data-placeholder="Select Size" name="size">
-                                    <option value="00" data-id="00">Select Size</option>
+                                    <option value="0" data-id="00">Select Size</option>
                                     @foreach ($size as $data)
                                     <option value="{{ $data->id }}" data-id="{{ $data->details }}">{{ $data->name }}</option>
                                     @endforeach
@@ -113,20 +115,20 @@
                             <div class="col-lg-3 form-group">
                                 <label for="color">Color</label>
                                 <select class="color form-control form-control-sm select2" data-placeholder="Select Color" name="color">
-                                    <option value="00" data-id="00">Select Color</option>
+                                    <option value="0" data-id="00">Select Color</option>
                                     @foreach ($color as $data)
                                         <option value="{{ $data->id }}" data-id="{{ $data->details }}">{{ $data->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-lg-9 form-group">
-                                <label for="name">Item Name <span style="color:gray">*</span></label>
-                                <input name="name" class="name form-control form-control-sm" type="text" placeholder="Item Name" required>
+                                <label for="name">Product Name <span style="color:gray">*</span></label>
+                                <input name="name" class="name form-control form-control-sm" type="text" placeholder="Product Name" required>
                             </div>
                             <div class="col-lg-3 form-group">
-                                <label for="code">Item Code </label>
+                                <label for="code">Product Code </label>
                                 <input name="code" class="code form-control form-control-sm"
-                                       type="text" placeholder="Item Code" readonly>
+                                       type="text" placeholder="Product Code" readonly>
                             </div>
                             <div class="col-lg-3 form-group">
                                 <label for="purchase_price">Purchase Price <span style="color:gray">*</span></label>
@@ -154,7 +156,7 @@
                                        type="text" placeholder="Sale Price" required>
                             </div>
                             <div class="col-lg-9 form-group">
-                                <label for="image">Item Image</label>
+                                <label for="image">Product Image</label>
                                 <input name="image" type="file" class="form-control form-control-sm">
                             </div>
                         </div>
@@ -162,7 +164,7 @@
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal" style="color: white;">Cancel</button>
 {{--                        <button type="reset" class="btn btn-danger btn-sm">Clear</button>--}}
-                        <button type="submit" class="btn btn-success btn-sm">Update</button>
+                        <button type="submit" class="btn btn-success btn-sm productUpdate">Update</button>
                     </div>
                 </form>
             </div>
@@ -174,6 +176,19 @@
 @endsection
 @section('customJs')
 <script type="text/javascript">
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: true
+    });
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 2500
+    });
     $(document).ready(function () {
         let year = new Date().getFullYear().toString().substr(-2);
         let cat = '00';
@@ -196,46 +211,59 @@
         });
         $(document).on('click', '.NewDelete', function() {
             var id = $(this).val();
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },buttonsStyling: false
-            })
             swalWithBootstrapButtons.fire({
                 title: 'Are you sure?',
-                text: "You Want to Delete this Item ??",
+                text: "You Want to Delete this Product ??",
                 type: 'question',
                 showCancelButton: true,
                 confirmButtonText: ' Yes, delete it ! ',
                 cancelButtonText: ' No, cancel ! ',
+                cancelButtonColor: 'orange',
+                confirmButtonColor: 'green',
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-                    swalWithBootstrapButtons.fire(
-                        ' Deleted ! ',
-                        ' Item has been Deleted Successfully.',
-                        'success'
-                    )
+                    // swalWithBootstrapButtons.fire(
+                    //     ' Deleted ! ',
+                    //     ' Product has been Deleted Successfully.',
+                    //     'success'
+                    // )
                     $.ajax({
                         url: "{{ route('product.destroy') }}",
                         type: 'GET',
                         data: { id: id, },
                         success: function (){
-                            setTimeout(function(){
-                                location.reload();
-                            }, 500);
+                            $("#example1").load(location + " #example1");
+                            $(function() {
+                                Toast.fire({
+                                    type: 'info',
+                                    title: '&nbsp; Product Deleted. '
+                                })
+                            });
+                            // setTimeout(function(){
+                            //     location.reload();
+                            // }, 500);
+                        },
+                        error: function (error) {
+                            console.log(error);
+                            $(function() {
+                                Toast.fire({
+                                    type: 'error',
+                                    title: '&nbsp; Product Not Updated. '
+                                })
+                            });
                         }
                     });
                 } else if (
                     result.dismiss === Swal.DismissReason.cancel
                 ) { swalWithBootstrapButtons.fire(
                     ' Canceled ',
-                    ' Item has not Deleted. ',
+                    ' Product delete canceled. ',
                     'error'
                 )};
             });
         });
+        // $('body').on('click', '.editProduct', function () {
         $(document).on('click', '.editProduct', function () {
             let id = $(this).val();
             $.ajax({
@@ -246,7 +274,6 @@
                     $('.pid').val(data[0]['id']);
                     $('.name').val(data[0]['name']);
                     $('.code').val(data[0]['code']);
-                    // $('.category').val(data[0]['category']);
                     $('.category').val(data[0]['category']).change();
                     $('.brand').val(data[0]['brand']).change();
                     $('.color').val(data[0]['color']).change();
@@ -261,33 +288,51 @@
                 }
             });
         });
-        $(document).on('submit', '#updatE', function (e) {
+        $(document).on('submit', '#UPDATE', function (e) {
             e.preventDefault();
+            $(".productUpdate").html('Updating...');
             $.ajax({
                 type: "POST",
                 url: "{{ route('product.update') }}",
-                data: form.serialize(),
+                // data: form.serialize(),
+                data: {
+                    '_token'    : $('input[name=_token]').val(),
+                    'id'        : $(".pid").val(),
+                    'name'      : $(".name").val(),
+                    'code'      : $(".code").val(),
+                    'category'  : $(".category").val(),
+                    'brand'     : $(".brand").val(),
+                    'size'      : $(".size").val(),
+                    'color'     : $(".color").val(),
+                    'purchase_price' : $(".purchase_price").val(),
+                    'cost'      : $(".cost").val(),
+                    'profit'    : $(".profit").val(),
+                    'sale_price': $(".sale_price").val(),
+                    'image'     : $(".image").val(),
+                },
                 success: function () {
+                    $('.productUpdate').html('Update');
                     $('#edit-modal-lg').modal('hide');
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top',
-                        showConfirmButton: false,
-                        timer: 2500
-                    });
                     $(function() {
                         Toast.fire({
-                        type: 'info',
-                        title: '&nbsp; Item Updated Successfully. '
+                            type: 'success',
+                            title: '&nbsp; Product Updated Successfully. '
                         })
                     });
-                    setTimeout(function(){
-                        location.reload();
-                    }, 2000);
+                    $("#example1").load(location + " #example1");
+                    // setTimeout(function(){
+                    //     location.reload();
+                    // }, 2000);
                 },
                 error: function (error) {
+                    $('.productUpdate').html('Update');
                     console.log(error);
-                    alert('Data Not Saved');
+                    $(function() {
+                        Toast.fire({
+                            type: 'error',
+                            title: '&nbsp; Product Not Updated. '
+                        })
+                    });
                 }
             });
         });

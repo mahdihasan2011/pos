@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-    Purchase Invoice 
+    Purchase Invoice
 @endsection
 @section('content')
 <div class="content-wrapper">
@@ -17,18 +17,12 @@
                   <div class="row">
                     <div class="col-lg-12">
                       <h4>
-                        @foreach ($company as $data)
-                        <img src="{{ asset($data->logo) }}" alt="Company Logo" style="height: 50px;">
-                        {{ $data->title }}
-                        @endforeach
+                        <img src="{{ asset($company->logo) }}" alt="Company Logo" style="height: 50px;">
                         <small class="float-right">
-                            @foreach ($purchases as $data)
-                            <a href="{{ route('purchase.report.invoice.print',['id'=>$data->purchase_no]) }}" 
+                            <a href="{{ route('purchase.report.invoice.print',['id'=>$purchases->purchase_no]) }}"
                               target="_blank" class="btn btn-primary btn-sm" title="Print Invoice">
                                 Print <i class="fas fa-print"></i>
                             </a>
-                            @break
-                            @endforeach
                         </small>
                       </h4>
                     </div>
@@ -36,39 +30,30 @@
                   <div class="row invoice-info">
                     <div class="col-sm-4 invoice-col">
                         From
-                        @foreach ($company as $data)
                         <address>
-                            <strong>{{ $data->name }}</strong><br>
-                            @if ($data->address != null) {{ $data->address }} @endif<br>
-                            @if ($data->phone != null) Phone : {{ $data->phone }} @endif<br>
-                            @if ($data->email != null) Email : {{ $data->email }} @endif
-                            @if ($data->website != null) Website : {{ $data->website }} @endif
+                          <strong>{{ !empty($company->title) ? $company->title : "" }}</strong><br>
+                          {{ !empty($company->address) ? "Address : ".$company->address : "" }}<br>
+                          {{ !empty($company->phone) ? "Phone : ".$company->phone : "" }}<br>
+                          {{ !empty($company->email) ? "Email : ".$company->email : "" }}<br>
+                          {{ !empty($company->website) ? "Website : ".$company->website : "" }}
                         </address>
-                        @endforeach
                     </div>
-                    @foreach ($purchases as $data)
                     <div class="col-sm-4 invoice-col">
                         To
                         <address>
-                            @if ($data->supplier != null) <strong>{{ $data->supplier }}</strong><br>
-                            @if ($data->address != null) {{ $data->address }} @endif<br>
-                            @if ($data->phone != null) Phone : {{ $data->phone }} @endif<br>
-                            @if ($data->email != null) Email : {{ $data->email }} @endif
-                            @else <b>Cash</b>
-                            @endif
+                          <strong>{{ !empty($purchases->customer) ? $purchases->customer : "Cash Purchase" }}</strong><br>
+                          {{ !empty($purchases->address) ? "Address : ".$purchases->address : "" }}<br>
+                          {{ !empty($purchases->phone) ? "Phone : ".$purchases->phone : "" }}<br>
+                          {{ !empty($purchases->email) ? "Email : ".$purchases->email : "" }}<br>
                         </address>
                     </div>
                     <div class="col-sm-4 invoice-col">
-                        <b>Invoice No # {{ $data->purchase_no }}</b><br>
-                        <br>
-                        {{--  <b>Order ID:</b> 4F3S8J<br>  --}}
-                        <b>Purchase Date :</b> {{ $data->date }}<br>
-                        <b>Bill Account : </b> {{ $data->payable }} Tk.
+                        <b>Invoice No # {{ $purchases->purchase_no }}</b><br><br>
+                        <b>Purchase Date :</b> {{ \Carbon\Carbon::parse($purchases->date)->isoFormat('D/MM/YYYY') }}<br>
+                        <b>Bill Account : {{ $purchases->payable }} Tk.</b>
                     </div>
-                    @break
-                    @endforeach
                   </div>
-    
+
                   <div class="row">
                     <div class="col-lg-12 table-responsive">
                       <table class="table table-striped">
@@ -96,7 +81,7 @@
                       </table>
                     </div>
                   </div>
-    
+
                   <div class="row">
                     <div class="col-lg-8">
                       {{--  <p class="lead">Payment Methods:</p>
@@ -104,66 +89,66 @@
                       <img src="../../dist/img/credit/mastercard.png" alt="Mastercard">
                       <img src="../../dist/img/credit/american-express.png" alt="American Express">
                       <img src="../../dist/img/credit/paypal2.png" alt="Paypal">  --}}
-                     
-                      @foreach ($company as $data)
-                      @if ($data->invoice_note != null)
-                      <p class="lead">Company Policy :</p>
-                      <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
-                        {{ $data->invoice_note }}
-                      </p>
-                      @endif
-                      @endforeach
+
+{{--                      @foreach ($company as $data)--}}
+{{--                      @if ($data->invoice_note != null)--}}
+{{--                      <p class="lead">Company Policy :</p>--}}
+{{--                      <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">--}}
+{{--                        {{ $data->invoice_note }}--}}
+{{--                      </p>--}}
+{{--                      @endif--}}
+{{--                      @endforeach--}}
                     </div>
                     <div class="col-lg-4">
                       {{--  <p class="lead">Amount Due 2/22/2014</p>  --}}
-    
+
                       <div class="table-responsive">
-                        @foreach ($purchases as $data)
                         <table class="table">
                           <tr>
                             <th style="width:50%">Total Quantity :</th>
-                            <td>{{ $data->total_qty }}</td>
+                            <td>{{ $purchases->total_qty }}</td>
                           </tr>
                           <tr>
                             <th>SubTotal : (Tk.)</th>
-                            <td>{{ $data->sub_total }}</td>
+                            <td>{{ $purchases->sub_total }}</td>
                           </tr>
+                          @if (!empty($purchases->discount))
                           <tr>
                             <th>Discount :</th>
                             <td>
-                                {{ $data->discount }}
-                                @if ($data->disc_type = 1) %
-                                @elseif ($data->disc_type = 2) Tk
-                                @endif
+                                {{ $purchases->discount }}
+                                {{ ($purchases->disc_type = 1) ? '%' : 'Tk' }}
                             </td>
                           </tr>
+                          @endif
+                          @if (!empty($purchases->payable))
                           <tr>
                             <th>Payable : (Tk.)</th>
-                            <td>{{ $data->payable }}</td>
+                            <td>{{ $purchases->payable }}</td>
                           </tr>
+                          @endif
+                          @if (!empty($purchases->paid))
                           <tr>
                             <th>Paid : (Tk.)</th>
-                            <td>{{ $data->paid }}</td>
+                            <td>{{ $purchases->paid }}</td>
                           </tr>
+                          @endif
+                          @if (!empty($purchases->due))
                           <tr>
                             <th>Due : (Tk.)</th>
-                            <td>{{ $data->due }}</td>
+                            <td>{{ $purchases->due }}</td>
                           </tr>
+                          @endif
+                          @if (!empty($purchases->return))
                           <tr>
                             <th>Return : (Tk.)</th>
-                            <td>{{ $data->return }}</td>
+                            <td>{{ $purchases->return }}</td>
                           </tr>
-                          {{--  <tr>
-                            <th>Total:</th>
-                            <td>$265.24</td>
-                          </tr>  --}}
-                        </table>
-                        @break
-                        @endforeach
+                          @endif
                       </div>
                     </div>
                   </div>
-    
+
                     {{--  <div class="row no-print">
                         <div class="col-lg-12">
                         <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
@@ -182,5 +167,5 @@
     </section>
 
 </div>
-  
+
 @endsection

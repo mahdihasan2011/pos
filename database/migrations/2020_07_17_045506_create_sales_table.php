@@ -16,13 +16,14 @@ class CreateSalesTable extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->string('sale_no');
-            $table->date('date')->nullable();
+            $table->dateTime('date')->nullable();
             $table->string('customer')->nullable();
             $table->decimal('amount', 10,2)->nullable();
             $table->integer('total_qty')->nullable();
             $table->double('sub_total', 10,2)->nullable();
             $table->double('discount', 10,2)->nullable();
             $table->tinyInteger('disc_type')->nullable();
+            $table->double('vat', 10,2)->nullable();
             $table->double('payable', 10,2)->nullable();
             $table->double('paid', 10,2)->nullable();
             $table->double('return', 10,2)->nullable();

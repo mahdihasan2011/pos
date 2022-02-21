@@ -15,9 +15,11 @@
                             data-toggle="modal" data-target="#add-modal-sm">
                             <i class="fas fa-plus-circle"></i> {{ __('Add New') }}
                         </button> -->
+                        @can('role_create')
                         <a href="{{ route('role.create') }}" class="btn btn-primary btn-xs float-right">
                             <i class="fas fa-plus-circle"></i> {{ __('Add New') }}
                         </a>
+                        @endcan
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped">
@@ -45,9 +47,11 @@
                                             data-toggle="modal" data-target="#edit-modal-sm">
                                             <i class="fas fa-edit"></i>
                                         </button> -->
+                                        @can('role_update')
                                         <a href="{{ route('role.edit',['id'=>$data->id]) }}" class="btn btn-info btn-xs">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        @endcan
                                         <!-- <button class="btn btn-danger NewDelete btn-xs"
                                             value="{{ $data->id }}"><i class="fas fa-trash-alt"></i>
                                         </button> -->

@@ -10,8 +10,10 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Supplier <small>( List )</small></h3>
+                        @can('supplier_create')
                         <a href="javascript:void(0)" class="btn btn-primary btn-sm"
                             style="float: right;" id="AddCustomer">Add</a>
+                        @endcan
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped table-hover">
@@ -42,14 +44,18 @@
                                 <td>{{ $data->balance }}</td>
                                 <td>{{ $data->address }}</td>
                                 <td>
+                                    @can('supplier_update')
                                     <a href="javascript:void(0)" id="EditCustomer"
                                         data-id="{{ $data->id }}" class="btn btn-primary btn-xs">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    @endcan
+                                    @can('supplier_delete')
                                     <a href="javascript:void(0)" id="DeleteCustomer"
                                         data-id="{{ $data->id }}" class="DeleteCustomer btn btn-danger btn-xs">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
+                                    @endcan
                                 </td>
                             </tr>
                             @endforeach
@@ -135,6 +141,19 @@
 @endsection
 @section('customJs')
     <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000
+        });
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: true
+        });
         $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
@@ -169,12 +188,6 @@
             /* Delete Supplier */
             $('body').on('click', '.DeleteCustomer', function () {
                 var id = $(this).data("id");
-                const swalWithBootstrapButtons = Swal.mixin({
-                    customClass: {
-                        confirmButton: 'btn btn-success',
-                        cancelButton: 'btn btn-danger'
-                    },buttonsStyling: false
-                })
                 swalWithBootstrapButtons.fire({
                     title: 'Are you sure?',
                     text: "You Want to Delete this Supplier ??",
@@ -182,6 +195,8 @@
                     showCancelButton: true,
                     confirmButtonText: ' Yes, Confirm ! ',
                     cancelButtonText: ' No, Cancel ! ',
+                    cancelButtonColor: 'orange',
+                    confirmButtonColor: 'green',
                     reverseButtons: true
                 }).then((result) => {
                     if (result.value) {
@@ -271,19 +286,13 @@
                             data: $('#CustomerForm').serialize(),
                             success: function (data)
                             {
-                            var user = '<tr id="customer_id_' + data.id + '"><td>' + data.id + '</td><td>' + data.name + '</td><td>' + data.phone + '</td><td>' + data.email + '</td><td>' + data.category + '</td><td>' + data.balance + '</td><td>' + data.address + '</td>';
+                            var user = '<tr id="customer_id_' + data.id + '"><td>' + data.id + '</td><td>' + data.name + '</td><td>' + data.phone + '</td><td>' + data.category + '</td><td>' + data.balance + '</td><td>' + data.address + '</td>';
                                 user += '<td><a href="javascript:void(0)" id="EditCustomer" data-id="' + data.id + '" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a> ';
                                 user += '<a href="javascript:void(0)" id="DeleteCustomer" data-id="' + data.id + '" class="DeleteCustomer btn btn-danger btn-xs"><i class="fas fa-trash-alt"></i></a></td></tr>';
                                 $('#example1').prepend(user);
                                 $('#CustomerForm').trigger("reset");
                                 $('#CustomerModal').modal('hide');
                                 $('#CustomerSave').html('Save');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
                                 $(function() {
                                     Toast.fire({
                                     type: 'success',
@@ -312,19 +321,13 @@
                             },
                             success: function (data)
                             {
-                            var user = '<tr id="customer_id_' + data.id + '"><td>' + data.id + '</td><td>' + data.name + '</td><td>' + data.phone + '</td><td>' + data.email + '</td><td>' + data.category + '</td><td>' + data.balance + '</td><td>' + data.address + '</td>';
+                            var user = '<tr id="customer_id_' + data.id + '"><td>' + data.id + '</td><td>' + data.name + '</td><td>' + data.phone + '</td><td>' + data.category + '</td><td>' + data.balance + '</td><td>' + data.address + '</td>';
                                 user += '<td><a href="javascript:void(0)" id="EditCustomer" data-id="' + data.id + '" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a> ';
                                 user += '<a href="javascript:void(0)" id="DeleteCustomer" data-id="' + data.id + '" class="DeleteCustomer btn btn-danger btn-xs"><i class="fas fa-trash-alt"></i></a></td></tr>';
                                 $("#customer_id_" + data.id).replaceWith(user);
                                 $('#CustomerForm').trigger("reset");
                                 $('#CustomerModal').modal('hide');
                                 $('#CustomerSave').html('Save');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
                                 $(function() {
                                     Toast.fire({
                                     type: 'success',

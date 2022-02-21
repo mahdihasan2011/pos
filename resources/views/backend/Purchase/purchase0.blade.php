@@ -2,258 +2,231 @@
 @section('title')
     Purchase
 @endsection
+@section('customCSS')
+    <style>
+        .blink_me1 {
+            animation: blinker 1s linear infinite;
+        }
+        .blink_me05 {
+            animation: blinker 0.5s linear infinite;
+        }
+        .blink_me2 {
+            color: red;
+            font-size: 24px;
+            animation: blinker 2s linear infinite;
+        }
+        @keyframes blinker {
+            50% {
+            opacity: 0;
+            }
+        }
+    </style>
+@endsection
 @section('content')
-<style>
-    {{--  .blink {
-        animation: blink 2s steps(5, start) infinite;
-        -webkit-animation: blink 1s steps(5, start) infinite;
-    }
-    @keyframes blink {
-        to {
-            visibility: hidden;
-        }
-    }
-    @-webkit-keyframes blink {
-        to {
-            visibility: hidden;
-        }
-    }  --}}
-    .blink_me {
-        animation: blinker 2s linear infinite;
-    }
-    .blink_me2 {
-        animation: blinker 0.5s linear infinite;
-    } 
-    .blink_me3 {
-        color: red;
-        font-size: 24px;
-        animation: blinker 2s linear infinite;
-    } 
-    @keyframes blinker {
-        50% {
-          opacity: 0;
-        }
-    }
-    .MOBN {
-        border: hidden;
-        color: black;
-    }
-    .MOBV {
-        border: hidden;
-        color: blue;
-    }
-    .MOBS {
-        border: hidden;
-        color: green;
-    }
-    .MOBB {
-        border: hidden;
-        color: red;
-    }
-</style>
-
-<div class="content-wrapper">
-
+<div class="content-wrapper pb-0">
     <section class="content pt-2">
         <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="row">
-
-                            <div class="col-5 row">
-                                <h5 class="col-12 card- title">
-                                    Purchase Invoice
-                                    {{--  <br>  --}}
-                                    <b class="blink_me2">:</b> 
-                                    {{--  <i class="fa fa-3x fa-exclamation-circle blink"></i>  --}}
-                                    <small class="blink _me" style="color: blue;">{{ $purchase }}</small>
-                                    <input type="hidden" name="purchase_no" value="{{ $purchase }}"/>
-                                </h5>
-                            </div>
-
-                            <div class="col-4 row form-group">
-                                <select class="col-10 select 2bs4 PRODUCT" name="product"
-                                    data-placeholder="&nbsp; Choose Product">
-                                    <option value="">Choose Product</option>
-                                    @foreach ($products as $data)
-                                    <option value="{{ $data->id }}">{{ $data->name }} - {{ $data->code }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <h6 class="col-3 text-right" style="float: right;">
-                                Total Bill : 
-                                {{--  ৳   --}}
-                                <b class="blink_me3">1000</b> 
-                                Tk.
-                            </h6>
-                            
-                            <div class="col-3 row">
-                                <div class="col-10">
-                                    <select class="SUPP form-control form-control-sm" 
-                                        name="supplier" data-placeholder="Select Supplier">
-                                        <option value="">Select Supplier</option>
-                                        @foreach ($suppliers as $data)
-                                        <option value="{{ $data->id }}">{{ $data->name }}</option>
+            <div class="col-lg-12">
+                <form id="CartStore">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-lg-4 row">
+                                    <h5 class="col-lg-12">
+                                        Purchase No. <b class="blink_me05">:</b>
+                                        <small style="color: #0000ff;">{{ $purchase }}</small>
+                                        <input type="hidden" class="purchase_no" value="{{ $purchase }}"/>
+                                    </h5>
+                                </div>
+                                <div class="col-lg-5 row form-group">
+                                    <select class="col-lg-10 select2 bs4 form-control form-control-sm"
+                                        data-live-search="true" data-style="btn-primary"
+                                        name="addProduct" data-placeholder="Choose Product">
+                                        <option value="">Choose Product</option>
+                                        @foreach ($products as $data)
+                                        <option value="{{ $data->id }}">{{ $data->name }} - {{ $data->code }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div>
-                                    <button class="btn btn-primary btn-sm" type="button" 
-                                        data-toggle="modal" data-target="#SupplierModal">
-                                        <i class="fas fa-plus-circle"></i>
-                                    </button>
+                                <h6 class="col-lg-3 text-right form-inline" style="float: right;">
+                                    Total Bill (Tk.) : &nbsp;
+                                    <b class="blink_me2 BILL"></b>
+                                </h6>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 row">
+                                    <div class="col-lg-10">
+                                        <select class="SUPP select2 form-control form-control-sm"
+                                            name="supplier" title="Select Supplier"
+                                            data-placeholder="Select Supplier">
+                                            <option value="Cash">Cash</option>
+                                            @foreach ($suppliers as $data)
+                                            <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-primary btn-sm" type="button"
+                                            data-toggle="modal" data-target="#SupplierModal" title="Add Supplier">
+                                            <i class="fas fa-user-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9 row">
+<!--                                    <div class="col-lg-3 row">
+                                        <label class="col-lg-5 text-right">Mobile :</label>
+                                        <div class="col-lg-7 text-left">
+                                            <div class="MOB"></div>
+                                        </div>
+                                    </div>-->
+                                    <div class="col-lg-4 row">
+                                        <label class="col-lg-5 text-right">Balance :</label>
+                                        <div class="col-lg-7 text-left">
+                                            <div class="BAL"></div>
+                                        </div>
+                                    </div>
+                                    {{-- <div class="col-lg-2">
+                                        <select class="payment_type form-control form-control-sm"
+                                            id="pay_type" title="Payment Type">
+                                            <option value="Cash">Cash</option>
+                                            <option value="Bkash">Bkash</option>
+                                            <option value="Rocket">Rocket</option>
+                                            <option value="Nagad">Nagad</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3" id="payment_number">
+                                        <input placeholder="Payment Number" type="number"
+                                            class="payment_number form-control form-control-sm">
+                                    </div> --}}
                                 </div>
                             </div>
-                            <div class="col-9 row">
-                                {{--  <div class="col-9">
-                                    <label>Mobile:</label>
-                                    <small class="col-7 MOBN badge badge-secondary card-title"></small>
-                                    <small class="col-7 MOBV badge badge-success card-title"></small>
-                                    <small class="col-7 MOBS badge badge-info card-title"></small>
-                                    <small class="col-7 MOBB badge badge-danger card-title"></small>
-                                    <input class="col-7 MOBS " readonly style="border: hidden;"/>
-                                    <input class="MOBN" readonly/>
-                                    <input class="MOBV" readonly/>
-                                    <input class="MOBS" readonly/>
-                                    <input class="MOBB" readonly/>
-                                </div>  --}}
-                                <div class="col-9 row">
-                                    <label>Mobile :</label>
-                                    <div class="col-2">
-                                        <input class="MOBN" readonly>
-                                    </div>
-                                    <div class="col-2">
-                                        <input class="MOBV" readonly>
-                                    </div>
-                                    <div class="col-2">
-                                        <input class="MOBS" readonly>
-                                    </div>
-                                    <div class="col-2">
-                                        <input class="MOBB" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-3 row">
-                                    <label class="col-6">Balance :</label>
-                                    <div class="col-6">
-                                        <input class="form-control form-control-sm BAL" 
-                                            readonly style="border: hidden;">
-                                    </div>
-                                </div>
-                                {{--  <div class="col-3 form-inline">
-                                    <label>Balance :</label>
-                                    <small class="col-4 BAL badge badge-info card-title"></small>
-                                    <input class="BAL" readonly style="border: hidden;"/>
-                                </div>  --}}
+                        </div>
+                        <div class="card-body row">
+                            <div class="col-lg-8 table-responsive row" style="height: 480px;">
+                                <table id="CartExample" class="table table-head-fixed">
+                                    <thead>
+                                        <tr>
+                                            <th>SL.</th>
+                                            <th colspan="2">Description</th>
+                                            <th>Quantity</th>
+                                            <th class="text-center">Price</th>
+                                            <th class="text-right">Total</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php $i = 1 @endphp
+                                        @foreach ($carts as $data)
+                                        <tr>
+                                            <td class="form-control-sm">{{ $i++ }}.</td>
+                                            <td colspan="2">
+                                                {{ $data->name }} <small>( {{ $data->code }} )</small>
+                                            </td>
+                                            <td class="form-inline">
+                                                <input class="QTY form-control form-control-sm text-center"
+                                                    value="{{ $data->quantity }}" name="quantity"
+                                                    data-id="{{ $data->code }}" type="text"
+                                                    style="width: 70px;"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <input class="PRICE form-control form-control-sm text-right"
+                                                    value="{{ $data->price }}" data-id="{{ $data->code }}"
+                                                    name="quantity" type="text" style="width: 100px;"/>
+                                            </td>
+                                            <td class="text-right">{{ $data->total }}</td>
+                                            <td>
+                                                <a href="javascript:void(0)" data-id="{{ $data->id }}"
+                                                    class="DEL btn btn-danger btn-xs">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
+                            <div class="col-lg-4">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-right form-control-sm">Total Quantity : </td>
+                                            <td>
+                                                <input class="text-center form-control form-control-sm TQTY"
+                                                    name="total_qty" value="0" readonly
+                                                    style="border: hidden; width: 150px;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right form-control-sm">SubTotal (Tk.) : </td>
+                                            <td>
+                                                <input class="text-right form-control form-control-sm SUBT"
+                                                    name="sub_total" value="0" readonly
+                                                    style="border: hidden; width: 150px;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right form-control-sm">Discount : </td>
+                                            <td class="form-inline">
+                                                <input class="text-center DISC col-lg-8 form-control form-control-sm"
+                                                    value="0" name="discount" type="number"
+                                                    required style="width: 80px;"/>
+                                                <select class="DISCTYPE col-lg-4 form-control form-control-sm">
+                                                    <option id="1" value="1">%</option>
+                                                    <option id="2" value="2">Tk</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right form-control-sm">Payable Amount (Tk.) : </td>
+                                            <td>
+                                                <input class="text-right form-control form-control-sm PAY"
+                                                    value="0" name="payable" readonly style="border: hidden; width: 150px;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right form-control-sm">Paid Amount (Tk.) : </td>
+                                            <td>
+                                                <input class="text-center form-control form-control-sm PAID"
+                                                    required value="0" name="paid" type="number" style="width: 150px;" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right form-control-sm">Due Amount (Tk.) : </td>
+                                            <td>
+                                                <input class="text-right form-control form-control-sm DUE"
+                                                    value="0" name="due" readonly style="border: hidden; width: 150px;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right form-control-sm">Return Amount (Tk.) : </td>
+                                            <td>
+                                                <input class="text-right form-control form-control-sm
+                                                    RETURN" value="0" name="return" readonly
+                                                    style="border: hidden; width: 150px;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">
+                                                <button class="btn btn-danger btn-sm CLEAR" type="button">
+                                                    <i class="far fa-trash-alt"></i>
+                                                </button>
+                                            </td>
+                                            <td class="text-left">
+                                                <button class="btn btn-success btn-sm CATSAV" type="button">
+                                                    <i class="fas fa-check-circle"></i> Confirm
+                                                </button>
+                                                <a href="" class="btn btn-info btn-sm" target="_blank">
+                                                    <i class="fas fa-print"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
-                    <div id="cart-table" class="card-body row">
-                        <div id="carttable" class="col-8 table-responsive row" style="height: 385px;">
-                            <table class="table table-head-fixed text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>SL.</th>
-                                        <th colspan="2">Description</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th>Total</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($carts as $data)
-                                    <tr id="customer_id_{{ $data->id }}">
-                                        <td>{{ $data->sl }}.</td>
-                                        <td colspan="2">
-                                            {{ $data->name }}
-                                            {{--  <br> {{ $data->code }}  --}}
-                                            ( {{ $data->code }} )
-                                        </td>
-                                        <td class="form-inline">
-                                            <input class="QTY form-control form-control-sm" 
-                                                value="{{ $data->quantity }}" name="quantity" 
-                                                type="number" style="width: 60px;"/>
-                                            <a href="" class="btn btn-success btn-xs">
-                                                <i class="fas fa-check-circle"></i>
-                                            </a>
-                                        </td>
-                                        <td>{{ $data->price }}</td>
-                                        <td>{{ $data->total }}</td>
-                                        <td>
-                                            <button class="btn btn-danger NewDelete btn-xs" 
-                                                value="{{ $data->id }}"><i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="caltable" class="col-4">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr>
-                                        <td class="text-right">Total Quantity : </td>
-                                        <td>
-                                            <input class="form-control form-control-sm TQTY" readonly 
-                                                name="due" value="{{ $tqty }}" 
-                                                style="border: hidden; width: 150px;"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">SubTotal : </td>
-                                        <td>
-                                            <input class="form-control form-control-sm SUBT" readonly
-                                                name="due" value="{{ $subt }}"
-                                                style="border: hidden; width: 150px;"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">Discount : </td>
-                                        <td class="form-inline">
-                                            <input class="DISC col-7 form-control form-control-sm" 
-                                                name="disc" type="number" required style="width: 80px;"/>
-                                            <select class="DISCTYPE col-5 form-control form-control-sm" name="disc-type">
-                                                <option value="1">%</option>
-                                                <option value="2">Tk</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">Payable Amount : </td>
-                                        <td>
-                                            <input class="form-control form-control-sm PAY" readonly
-                                                name="payable" style="border: hidden; width: 150px;"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">Paid Amount : </td>
-                                        <td>
-                                            <input class="form-control form-control-sm PAID" required
-                                                name="paid" type="number" style="width: 150px;"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">Due Amount : </td>
-                                        <td>
-                                            <input class="form-control form-control-sm DUE" readonly 
-                                                name="due" style="border: hidden; width: 150px;"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">Return Amount : </td>
-                                        <td>
-                                            <input class="form-control form-control-sm RETURN" readonly
-                                                name="return" style="border: hidden; width: 150px;"/>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </section>
@@ -271,34 +244,34 @@
                     @csrf
                     <div class="modal-body">
                         <div class="form-group row">
-                            <label for="name" class="col-sm-2 col-form-sm-label">
+                            <label for="name" class="col-lg-2 col-lg-form-sm-label">
                                 Name <span style="color:gray">*</span>
                             </label>
-                            <div class="col-sm-10">
+                            <div class="col-lg-10">
                                 <input type="text" class="form-control form-control-sm" required
                                     name="name" placeholder="Enter Supplier Name Here ...">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="phone" class="col-sm-2 col-form-sm-label">
-                                Phone <span style="color:gray">*</span>
+                            <label for="phone" class="col-lg-2 col-lg-form-sm-label">
+                                Phone
                             </label>
-                            <div class="col-sm-10">
-                                <input type="number" class="form-control form-control-sm" required
+                            <div class="col-lg-10">
+                                <input type="number" class="form-control form-control-sm"
                                     name="phone" placeholder="Enter Supplier Phone Number Here ...">
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="email" class="col-sm-2 col-form-sm-label">E-mail</label>
-                            <div class="col-sm-10">
-                                <input type="email" class="form-control form-control-sm" 
+<!--                        <div class="form-group row">
+                            <label for="email" class="col-lg-2 col-lg-form-sm-label">E-mail</label>
+                            <div class="col-lg-10">
+                                <input type="email" class="form-control form-control-sm"
                                     name="email" placeholder="Enter Supplier E-mail ID Here ...">
                             </div>
-                        </div>
+                        </div>-->
                         <div class="form-group row">
-                            <label for="category" class="col-sm-2 col-form-sm-label">Category</label>
-                            <div class="col-sm-10">
-                                <select class="form-control form-control-sm" 
+                            <label for="category" class="col-lg-2 col-lg-form-sm-label">Category</label>
+                            <div class="col-lg-10">
+                                <select class="form-control form-control-sm"
                                     name="category" title="Select Supplier Category">
                                     <option value="Normal">Normal</option>
                                     <option value="Vip">Vip</option>
@@ -308,15 +281,15 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="balance" class="col-sm-2 col-form-sm-label">Balance</label>
-                            <div class="col-sm-10">
+                            <label for="balance" class="col-lg-2 col-lg-form-sm-label">Balance</label>
+                            <div class="col-lg-10">
                                 <input type="number" class="form-control form-control-sm" value="0"
                                     name="balance" placeholder="Enter Supplier Balance Here ...">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="address" class="col-sm-2 col-form-sm-label">Address</label>
-                            <div class="col-sm-10">
+                            <label for="address" class="col-lg-2 col-lg-form-sm-label">Address</label>
+                            <div class="col-lg-10">
                                 <textarea class="form-control form-control-sm" name="address" rows="2"
                                     placeholder="Enter Supplier Address Here ..."></textarea>
                             </div>
@@ -324,7 +297,6 @@
                     </div>
                     <div class="modal-footer justify-content-between center">
                         <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Close</button>
-                        {{--  <button type="reset" class="btn btn-danger btn-sm">Reset</button>  --}}
                         <button type="submit" class="btn btn-success btn-sm">Save</button>
                     </div>
                 </form>
@@ -333,69 +305,12 @@
     </div>
 
 </div>
-
-    <script>
-        $(document).ready(function () {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            /*  Add Customer */
-            $('#AddCustomer').click(function () {
-                $('#CustomerSave').val("create-customer");
-                $('#CustomerForm').trigger("reset");
-                $('#CustomerSave').html("Save");
-                $('#ModalHeader').html("Add <small>( Customer Information )</small>");
-                $('#CustomerModal').modal('show');
-            });
-    
-            /* Edit Customer */
-            $('body').on('click', '#EditCustomer', function () {
-                var id = $(this).data('id');
-                $.get('edit/' + id , function (data) {
-                    $('#ModalHeader').html("Edit <small>( Customer Information )</small>");
-                    $('#CustomerSave').val("edit-customer");
-                    $('#CustomerSave').html("Update");
-                    $('#CustomerModal').modal('show');
-                    $('#id').val(data.id);
-                    $('#name').val(data.name);
-                    $('#phone').val(data.phone);
-                    $('#email').val(data.email);
-                    $('#category').val(data.category);
-                    $('#balance').val(data.balance);
-                    $('#address').val(data.address);
-                })
-            });
-            /* Delete Customer */
-            $('body').on('click', '.DeleteCustomer', function () {
-                var id = $(this).data("id");
-                if(confirm("Are You sure want to delete ???")) 
-                {
-                    $.ajax({
-                        type: "get",
-                        url: "{{ url('customer/destroy') }}"+'/'+id,
-                        success: function (data) {
-                            $("#customer_id_" + id).remove();
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: 'top',
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
-                            $(function() { 
-                                Toast.fire({
-                                type: 'warning',
-                                title: ' Customer Information Deleted Successfully. '
-                                })
-                            });
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
-                    });
-                }
-                {{--  const swalWithBootstrapButtons = Swal.mixin({
+@endsection
+@section('customJs')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.CATSAV').on('click', function () {
+                const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
                     confirmButton: 'btn btn-success',
                     cancelButton: 'btn btn-danger'
@@ -403,214 +318,356 @@
                 })
                 swalWithBootstrapButtons.fire({
                     title: 'Are you sure?',
-                    text: "You Want to Delete this Customer ??",
-                    icon: 'warning',
+                    text: "You Want to Confirm this Product Purchase ??",
+                    type: 'question',
                     showCancelButton: true,
-                    confirmButtonText: ' Yes, delete it ! ',
-                    cancelButtonText: ' No, cancel ! ',
+                    confirmButtonText: ' Yes, Confirm ! ',
+                    cancelButtonText: ' No, Cancel ! ',
                     reverseButtons: true
                 }).then((result) => {
                     if (result.value) {
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('purchase.item.store') }}",
+                            data: {
+                                '_token'        : $('input[name=_token]').val(),
+                                'purchase_no'   : $(".purchase_no").val(),
+                                'supplier'      : $('.SUPP').val(),
+                                'amount'        : $('.BAL').val(),
+                                'total_qty'     : $('input[name=total_qty]').val(),
+                                'sub_total'     : $('input[name=sub_total]').val(),
+                                'discount'      : $('input[name=discount]').val(),
+                                'disc_type'     : $(".DISCTYPE").val(),
+                                'payable'       : $('input[name=payable]').val(),
+                                'paid'          : $('input[name=paid]').val(),
+                                'return'        : $('input[name=return]').val(),
+                                'due'           : $('input[name=due]').val(),
+                                'payment_type'  : $('input[name=payment_type]').val(),
+                            },
+                            success: function (response) {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'top',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                                $(function() {
+                                    Toast.fire({
+                                    type: 'success',
+                                    title: ' &nbsp; '+response.message+'.'
+                                    })
+                                });
+                                setTimeout(function(){
+                                    location.reload();
+                                }, 3000);
+                            },
+                            error: function (error) {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'top',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                                $(function() {
+                                    Toast.fire({
+                                    type: 'error',
+                                    title: ' &nbsp; '+error.message+'.'
+                                    })
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire(
-                        ' Deleted ! ',
-                        ' Customer has been Deleted Successfully.',
-                        'success'
-                    )
-                    $.ajax({
-                        url: "{{ url('customer/destroy') }}"+'/'+id,
-                        type: 'GET',
-                        data: { id: id, },
-                        success: function (){
-                            setTimeout(function(){
-                                location.reload();
-                            }, 1000); 
-                        }
-                    });
-                    } else if (
-                        result.dismiss === Swal.DismissReason.cancel
-                    ) { swalWithBootstrapButtons.fire(
-                        ' Cancelled ',
-                        ' Customer has not Deleted. ',
+                        ' Canceled ',
+                        ' Product Purchase Canceled ... ',
                         'error'
                     )};
-                });  --}}
-            });   
+                });
+            });
         });
-    
-        if ($("#CustomerForm").length > 0) 
-        {
-            $("#CustomerForm").validate({
-                rules: {
-                    name: {
-                        required: true,
-                        },
-                    phone: {
-                        required: true,
-                    },          
-                    email: {
-                        required: true,
-                    },          
-                    category: {
-                        required: true,
-                    },          
-                    balance: {
-                        required: true,
-                    },          
-                    address: {
-                        required: true,
-                    },
-                },
-                messages: {
-                    name: {
-                        required: "Please enter Customer Name",
-                    },
-                    phone: {
-                        required: "Please enter Customer Phone",
-                    },
-                    email: {
-                        required: "Please enter Customer Email",
-                    },
-                    category: {
-                        required: "Please select Customer Category",
-                    },
-                    balance: {
-                        required: "Please enter Customer Balance",
-                    },          
-                    address: {
-                        required: "Please enter Customer Address",
-                    },
-                },
-                submitHandler: function(form) {
-                    var actionType = $('#CustomerSave').val();
-                    $('#CustomerSave').html('Submitting...');
-                    if (actionType == "create-customer") {
-                        $.ajax({
-                            url: "{{ route('customer.store') }}",
-                            type: "POST",
-                            dataType: 'json',
-                            data: $('#CustomerForm').serialize(),
-                            success: function (data) 
-                            {
-                            var user = '<tr id="customer_id_' + data.id + '"><td>' + data.id + '</td><td>' + data.name + '</td><td>' + data.phone + '</td><td>' + data.email + '</td><td>' + data.category + '</td><td>' + data.balance + '</td><td>' + data.address + '</td>';
-                                user += '<td><a href="javascript:void(0)" id="EditCustomer" data-id="' + data.id + '" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a> ';
-                                user += '<a href="javascript:void(0)" id="DeleteCustomer" data-id="' + data.id + '" class="DeleteCustomer btn btn-danger btn-xs"><i class="fas fa-trash-alt"></i></a></td></tr>';
-                                $('#example1').prepend(user);
-                                $('#CustomerForm').trigger("reset");
-                                $('#CustomerModal').modal('hide');
-                                $('#CustomerSave').html('Save');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
-                                $(function() { 
-                                    Toast.fire({
-                                    type: 'success',
-                                    title: ' Customer Information Added Successfully. '
-                                    })
-                                });
-                            },
-                            error: function (data) {
-                                console.log('Error:', data);
-                                $('#CustomerSave').html('Save');
-                            }
-                        });
-                    } else {
-                        $.ajax({
-                            url: "{{ route('customer.update') }}",
-                            type: "POST",
-                            dataType: 'json',
-                            {{--  data: $('#CustomerForm').serialize(),  --}}
-                            data: {
-                                'id'        : $("#id").val(),
-                                'name'      : $("#name").val(),
-                                'phone'     : $("#phone").val(),
-                                'email'     : $("#email").val(),
-                                'category'  : $("#category").val(),
-                                'balance'   : $("#balance").val(),
-                                'address'   : $("#address").val(),
-                            },
-                            success: function (data) 
-                            {
-                            var user = '<tr id="customer_id_' + data.id + '"><td>' + data.id + '</td><td>' + data.name + '</td><td>' + data.phone + '</td><td>' + data.email + '</td><td>' + data.category + '</td><td>' + data.balance + '</td><td>' + data.address + '</td>';
-                                user += '<td><a href="javascript:void(0)" id="EditCustomer" data-id="' + data.id + '" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a> ';
-                                user += '<a href="javascript:void(0)" id="DeleteCustomer" data-id="' + data.id + '" class="DeleteCustomer btn btn-danger btn-xs"><i class="fas fa-trash-alt"></i></a></td></tr>';
-                                $("#customer_id_" + data.id).replaceWith(user);
-                                $('#CustomerForm').trigger("reset");
-                                $('#CustomerModal').modal('hide');
-                                $('#CustomerSave').html('Save');
-                                const Toast = Swal.mixin({
-                                    toast: true,
-                                    position: 'top',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
-                                $(function() { 
-                                    Toast.fire({
-                                    type: 'success',
-                                    title: ' Customer Information Updated Successfully. '
-                                    })
-                                });
-                            },
-                            error: function (data) {
-                                console.log('Error:', data);
-                                $('#CustomerSave').html('Save');
-                            }
-                        });
-                    }
-                }
-            })
-        }
-    </script>
 
-    <script>
-        $(".SUPP").on('change', function () {
-            var id = $(this).val();
+        $(document).ready(function() {
+            $('select[name="addProduct"]').change('select2:selecting', function(e) {
+                var id = $(this).val();
+                $.ajax({
+                    url: '{{ route('purchase.item.add') }}',
+                    type: 'GET',
+                    data: { id:id },
+                    success: function (data) {
+                        $("#CartExample").load(location + " #CartExample");
+                        $('.TQTY').val(data.tqty);
+                        $('.SUBT').val(data.subt);
+                        $('.DISC').val('0');
+                        $('.PAY').val(Math.round(data.subt));
+                        $('.PAID').val('0');
+                        $('.DUE').val(Math.round(data.subt));
+                        $('.RETURN').val('0');
+                        $('.BILL').html(Math.round(data.subt));
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 4000,
+                        });
+                        Toast.fire({
+                            type: 'success',
+                            title: ' &nbsp; Product Added to Cart Successfully. '
+                        });
+                    },
+                    error: function (data) {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                        $(function() {
+                            Toast.fire({
+                            type: 'error',
+                            title: ' Product Not Added to Cart. '
+                            })
+                        });
+                    }
+                });
+            });
+        });
+
+        $('body').on('click', '.DEL', function () {
+            var id = $(this).data("id");
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+                },buttonsStyling: false
+            })
+            swalWithBootstrapButtons.fire({
+                title: 'Are you sure ?',
+                text: "You Want to Remove this Product from Cart ??",
+                type: 'question',
+                showCancelButton: true,
+                confirmButtonText: ' Yes ! Remove ',
+                cancelButtonText: ' No ',
+                reverseButtons: true
+            }).then((result) => {
+                    if (result.value) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('purchase/item/delete') }}"+'/'+id,
+                        success: function (data) {
+                            $("#CartExample").load(location + " #CartExample");
+                            $('.TQTY').val(data.tqty);
+                            $('.SUBT').val(data.subt);
+                            $('.DISC').val('0');
+                            $('.PAY').val(Math.round(data.subt));
+                            $('.PAID').val('0');
+                            $('.DUE').val(Math.round(data.subt));
+                            $('.RETURN').val('0');
+                            $('.BILL').html(Math.round(data.subt));
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                            $(function() {
+                                Toast.fire({
+                                type: 'warning',
+                                title: '&nbsp; Product Removed from Cart Successfully. '
+                                })
+                            });
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    { swalWithBootstrapButtons.fire(
+                        ' Canceled ',
+                        ' Product not Removed from Cart. ',
+                        'error'
+                    )};
+                };
+            })
+        });
+        $('body').on('keyup', '.PRICE', function () {
+            var price   = $(this).val();
+            var id      = $(this).data("id");
             $.ajax({
-                url: '{{ route('purchase.supplier.details') }}',
-                type: 'get',
-                data: { id:id },
+                url: '{{ route('purchase.item.price') }}',
+                type: 'GET',
+                data: { id : id, price : price },
                 success: function (data) {
-                    if (data[0]['category']==='Normal') { 
-                        $('.MOBN').val(data[0]['phone']) 
-                    } else {
-                        $('.MOBN').val(null) 
-                    }
-                    if (data[0]['category']==='Vip') { 
-                        $('.MOBV').val(data[0]['phone']) 
-                    } else { 
-                        $('.MOBV').val(null) 
-                    }
-                    if (data[0]['category']==='Special') { 
-                        $('.MOBS').val(data[0]['phone']) 
-                    } else { 
-                        $('.MOBS').val(null) 
-                    }
-                    if (data[0]['category']==='Blocked') { 
-                        $('.MOBB').val(data[0]['phone'])
-                    } else { 
-                        $('.MOBB').val(null) 
-                    }
-                    $('.BAL').val(data[0]['balance']);
+                    $("#CartExample").load(location + " #CartExample");
+                    $('.TQTY').val(data.tqty);
+                    $('.SUBT').val(data.subt);
+                    $('.DISC').val('0');
+                    $('.PAY').val(Math.round(data.subt));
+                    $('.PAID').val('0');
+                    $('.DUE').val(Math.round(data.subt));
+                    $('.RETURN').val('0');
+                    $('.BILL').html(Math.round(data.subt));
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    $(function() {
+                        Toast.fire({
+                        type: 'info',
+                        title: '&nbsp; Price Updated Successfully. '
+                        })
+                    });
+                },
+                error: function (data) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    $(function() {
+                        Toast.fire({
+                        type: 'error',
+                        title: '&nbsp; Price Not Updated. '
+                        })
+                    });
                 }
             });
         });
-    </script>
-
-    <script>
-        $(".PRODUCT").on('change', function () {
-            var id = $(this).val();
+        $('body').on('keyup', '.QTY', function () {
+            var qty = $(this).val();
+            var id  = $(this).data("id");
             $.ajax({
-                url: '{{ route('purchase.item.add') }}',
-                type: 'get',
-                data: { id:id },
+                url: '{{ route('purchase.item.quantity') }}',
+                type: 'GET',
+                data: { id : id, qty : qty },
                 success: function (data) {
-                    {{--  location.reload();  --}}
-                    $("#cart-table").load(window.location + " #cart-table");
-                    {{--  $("#carttable").load(" #carttable");  --}}
-                    {{--  $("#caltable").load(" #caltable");  --}}
+                    $("#CartExample").load(location + " #CartExample");
+                    $('.TQTY').val(data.tqty);
+                    $('.SUBT').val(data.subt);
+                    $('.DISC').val('0');
+                    $('.PAY').val(Math.round(data.subt));
+                    $('.PAID').val('0');
+                    $('.DUE').val(Math.round(data.subt));
+                    $('.RETURN').val('0');
+                    $('.BILL').html(Math.round(data.subt));
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    $(function() {
+                        Toast.fire({
+                        type: 'info',
+                        title: '&nbsp; Quantity Updated Successfully. '
+                        })
+                    });
+                },
+                error: function (data) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    $(function() {
+                        Toast.fire({
+                        type: 'error',
+                        title: '&nbsp; Quantity Not Updated. '
+                        })
+                    });
                 }
+            });
+        });
+
+        $(".DISCTYPE").on('change', function () {
+            var id  = $(".DISC").val();
+            var dty = $(this).val();
+            $.ajax({
+                url: '{{ route('purchase.discount.type') }}',
+                type: 'GET',
+                data: { disc : id, disc_type : dty },
+                success: function (reponse) {
+                    $('.PAY').val(Math.round(reponse.payable));
+                    $('.BILL').html(Math.round(reponse.payable));
+                    $('.PAID').val('0');
+                    $('.DUE').val(Math.round(reponse.payable));
+                    $('.RETURN').val('0');
+                }
+            });
+        });
+        $(".DISC").on('keyup', function () {
+            var id  = $(this).val();
+            var dty = $(".DISCTYPE").val();
+            $.ajax({
+                url: '{{ route('purchase.discount') }}',
+                type: 'GET',
+                data: { disc : id, disc_type : dty },
+                success: function (reponse) {
+                    $('.PAY').val(Math.round(reponse.payable));
+                    $('.BILL').html(Math.round(reponse.payable));
+                    $('.PAID').val('0');
+                    $('.DUE').val(Math.round(reponse.payable));
+                    $('.RETURN').val('0');
+                }
+            });
+        });
+        $(".PAID").on('keyup', function () {
+            var paid    = $(this).val();
+            var pay     = $(".PAY").val();
+            $.ajax({
+                url: '{{ route('purchase.paid.amount') }}',
+                type: 'GET',
+                data: { paid : paid, pay : pay },
+                success: function (reponse) {
+                    $('.DUE').val(Math.round(reponse.due));
+                    $('.RETURN').val(Math.round(reponse.return));
+                }
+            });
+        });
+
+        $('#bkash_pay').hide();
+        $('#rocket_pay').hide();
+        $('#nagad_pay').hide();
+        $('#payment_number').hide();
+        $('#pay_type').change(function(){
+            var val = $(this).val();
+            if(val == 'Cash') {
+               $('#payment_number').hide();
+            } else {
+                $('#payment_number').show();
+            }
+        });
+
+        $(document).ready(function() {
+            $(".SUPP").change('select2:selecting', function(e) {
+                var id = $(this).val();
+                $.ajax({
+                    url: '{{ route('purchase.supplier.details') }}',
+                    type: 'get',
+                    data: { id:id },
+                    success: function (data) {
+                        if (data[0]['category']==='Normal') {
+                            $('.MOB').html(data[0]['phone']);
+                            $('.MOB').css("color", "blue");
+                        }
+                        if (data[0]['category']==='Vip') {
+                            $('.MOB').html(data[0]['phone']);
+                            $('.MOB').css("color", "yellow");
+                        }
+                        if (data[0]['category']==='Special') {
+                            $('.MOB').html(data[0]['phone']);
+                            $('.MOB').css("color", "orange");
+                        }
+                        if (data[0]['category']==='Blocked') {
+                            $('.MOB').html(data[0]['phone']);
+                            $('.MOB').css("color", "red");
+                        }
+                        $('.BAL').html(data[0]['balance']);
+                    }
+                });
             });
         });
     </script>

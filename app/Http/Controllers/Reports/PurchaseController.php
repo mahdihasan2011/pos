@@ -18,14 +18,14 @@ class PurchaseController extends Controller
     }
 
     public function datewise(Request $request)
-    { 
+    {
         // $d = new DateTime("now");
         // $today = $d->format('Y-m-d');
         // $fromdate = $request->fromdate;
-        // if ($request->todate) {  
-        //     $todate = $request->todate; 
-        // } else { 
-        //     $todate = $today; 
+        // if ($request->todate) {
+        //     $todate = $request->todate;
+        // } else {
+        //     $todate = $today;
         // }
         // $from_to_date = $request->from_to_date;
         // $startDate = $from_to_date('start');
@@ -42,35 +42,35 @@ class PurchaseController extends Controller
         //                         ->get();
         $fromToDate = $request->fromToDate;
         $suppliers  = Supplier::orderBy('id', 'DESC')->get();
-        // if ($request->fromToDate) {  
-        //     $fromToDate = $request->fromToDate; 
-        // } else { 
-        //     $fromToDate = 'Select Date'; 
+        // if ($request->fromToDate) {
+        //     $fromToDate = $request->fromToDate;
+        // } else {
+        //     $fromToDate = 'Select Date';
         // }
         $startDate  = $request->startDate;
         $endDate    = $request->endDate;
         $supplier   = $request->supplier;
-        if ($request->supplier && $request->startDate) {  
+        if ($request->supplier && $request->startDate) {
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')
                                 ->where('purchases.supplier', $supplier)
                                 ->whereBetween('date', [$startDate, $endDate])
                                 ->get();
-        } elseif ($request->supplier) { 
-        dd($supplier); 
+        } elseif ($request->supplier) {
+        dd($supplier);
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')
                                 ->where('purchases.supplier', $supplier)
                                 ->get();
-        } elseif ($request->startDate) {  
+        } elseif ($request->startDate) {
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')
                                 ->whereBetween('date', [$startDate, $endDate])
                                 ->get();
-        } else { 
+        } else {
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')
@@ -80,32 +80,32 @@ class PurchaseController extends Controller
         $tSub = $purchases->sum('sub_total');
         $tPay = $purchases->sum('payable');
         $tDis = $tSub - $tPay;
-        // return view('backend.Reports.Purchase.datewise', 
-        return view('backend.Reports.Purchase.supplier&datewise', 
+        // return view('backend.Reports.Purchase.datewise',
+        return view('backend.Reports.Purchase.supplier&datewise',
             compact('suppliers','supplier','purchases','tQty','tSub','tPay','tDis',
                     'fromToDate','startDate','endDate'));
     }
 
     public function datewise_print(Request $request)
-    { 
-        $company    = Company::all();
+    {
+        $company    = Company::first();
         $startDate  = $request->startDate;
         $endDate    = $request->endDate;
         $supplier   = $request->supplier;
-        if ($request->supplier) {  
+        if ($request->supplier) {
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')
                                 ->where('purchases.supplier', $supplier)
                                 ->whereBetween('date', [$startDate, $endDate])
                                 ->get();
-        } elseif ($request->startDate) {  
+        } elseif ($request->startDate) {
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')
                                 ->whereBetween('date', [$startDate, $endDate])
                                 ->get();
-        } else { 
+        } else {
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')
@@ -115,51 +115,59 @@ class PurchaseController extends Controller
         $tSub = $purchases->sum('sub_total');
         $tPay = $purchases->sum('payable');
         $tDis = $tSub - $tPay;
-        return view('backend.Reports.Purchase.datewisePrint', 
+        return view('backend.Reports.Purchase.datewisePrint',
             compact('company','supplier','purchases','tQty','tSub','tPay','tDis','startDate','endDate'));
     }
 
     public function big_invoice(Request $request)
     {
-        $company = Company::all();
+        $company = Company::first();
         $purchases = Purchase::where('purchase_no', $request->id)
                             ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                             ->select('purchases.*','suppliers.name as supplier',
                                     'suppliers.phone','suppliers.email','suppliers.address')
-                            ->get();
-        $purchase_dt = PurchaseItem::where('purchase_no', $request->id)->get();
+                            ->first();
+        $purchase_dt   = PurchaseItem::where('purchase_items.purchase_no', $request->id)
+            ->leftJoin('products', 'purchase_items.product_id', 'products.id')
+            ->select('purchase_items.*','products.code')
+            ->get();
 
-        return view('backend.Reports.Purchase.bigInvoice', 
+        return view('backend.Reports.Purchase.bigInvoice',
             compact('company','purchases','purchase_dt'));
     }
 
     public function bigInvoicePrint(Request $request)
     {
-        $company = Company::all();
+        $company = Company::first();
         $purchases = Purchase::where('purchase_no', $request->id)
                             ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                             ->select('purchases.*','suppliers.name as supplier',
                                     'suppliers.phone','suppliers.email','suppliers.address')
-                            ->get();
-        $purchase_dt = PurchaseItem::where('purchase_no', $request->id)->get();
+                            ->first();
+        $purchase_dt   = PurchaseItem::where('purchase_items.purchase_no', $request->id)
+            ->leftJoin('products', 'purchase_items.product_id', 'products.id')
+            ->select('purchase_items.*','products.code')
+            ->get();
 
-        return view('backend.Reports.Purchase.bigInvoicePrint', 
+        return view('backend.Reports.Purchase.bigInvoicePrint',
             compact('company','purchases','purchase_dt'));
     }
 
-    
+
     public function mini_invoice(Request $request)
     {
-        $company = Company::all();
-        $purchases = Purchase::where('purchase_no', $request->id)
-                            ->leftJoin('suppliers','purchases.supplier','suppliers.id')
-                            ->select('purchases.*','suppliers.name as supplier',
-                                    'suppliers.phone','suppliers.email','suppliers.address')
-                            ->get();
-        $purchase_dt = PurchaseItem::where('purchase_no', $request->id)->get();
-        
-        return view('backend.Reports.Purchase.miniInvoicePrint', 
-            compact('company','purchases','purchase_dt'));
+        $company    = Company::first();
+        $purchase   = Purchase::where('purchase_no', $request->id)
+                        ->leftJoin('suppliers','purchases.supplier','suppliers.id')
+                        ->select('purchases.*','suppliers.name as supplier','suppliers.phone','suppliers.email','suppliers.address')
+                        ->first();
+        $purchase_dt   = PurchaseItem::where('purchase_items.purchase_no', $request->id)
+                        ->leftJoin('products', 'purchase_items.product_id', 'products.id')
+                        ->select('purchase_items.*','products.code')
+                        ->get();
+
+        return view('backend.Reports.Purchase.miniInvoicePrint',
+            compact('company','purchase','purchase_dt'));
     }
 
 }

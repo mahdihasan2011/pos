@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Model\Company;
 use App\Model\Sale;
 use App\Model\SaleItem;
+use App\Model\Setting;
 use DateTime;
 use Illuminate\Http\Request;
 
@@ -17,17 +18,17 @@ class SaleController extends Controller
     }
 
     public function datewise(Request $request)
-    { 
+    {
         $fromToDate = $request->fromToDate;
         $startDate  = $request->startDate;
         $endDate    = $request->endDate;
-        if ($request->startDate) {  
+        if ($request->startDate) {
             $sales  = Sale::orderBy('id', 'DESC')
                                 ->leftJoin('customers','sales.customer','customers.id')
                                 ->select('sales.*','customers.name as customer')
                                 ->whereBetween('date', [$startDate, $endDate])
                                 ->get();
-        } else { 
+        } else {
             $sales  = Sale::orderBy('id', 'DESC')
                                 ->leftJoin('customers','sales.customer','customers.id')
                                 ->select('sales.*','customers.name as customer')
@@ -36,23 +37,24 @@ class SaleController extends Controller
         $tQty = $sales->sum('total_qty');
         $tSub = $sales->sum('sub_total');
         $tPay = $sales->sum('payable');
+        $tVat = $sales->sum('vat');
         $tDis = $tSub - $tPay;
-        return view('backend.Reports.Sale.datewise', 
-            compact('sales','tQty','tSub','tPay','tDis','fromToDate','startDate','endDate'));
+        $vat  = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        return view('backend.Reports.Sale.datewise', compact('sales','tQty','tSub','tPay','tDis','fromToDate','startDate','endDate','vat','tVat'));
     }
 
     public function datewise_print(Request $request)
-    { 
-        $company    = Company::all();
+    {
+        $company    = Company::first();
         $startDate  = $request->startDate;
         $endDate    = $request->endDate;
-        if ($request->startDate) {  
+        if ($request->startDate) {
             $sales  = Sale::orderBy('id', 'DESC')
                                 ->leftJoin('customers','sales.customer','customers.id')
                                 ->select('sales.*','customers.name as customer')
                                 ->whereBetween('date', [$startDate, $endDate])
                                 ->get();
-        } else { 
+        } else {
             $sales  = Sale::orderBy('id', 'DESC')
                                 ->leftJoin('customers','sales.customer','customers.id')
                                 ->select('sales.*','customers.name as customer')
@@ -60,53 +62,59 @@ class SaleController extends Controller
         }
         $tQty = $sales->sum('total_qty');
         $tSub = $sales->sum('sub_total');
+        $tVat = $sales->sum('vat');
         $tPay = $sales->sum('payable');
         $tDis = $tSub - $tPay;
-        return view('backend.Reports.Sale.datewisePrint', 
-            compact('company','sales','tQty','tSub','tPay','tDis','startDate','endDate'));
+        $vat  = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        return view('backend.Reports.Sale.datewisePrint', compact('company','sales','tQty','tSub','tPay','tDis','startDate','endDate','vat','tVat'));
     }
 
     public function big_invoice(Request $request)
     {
-        $company    = Company::all();
+        $company    = Company::first();
         $sales      = Sale::where('sale_no', $request->id)
                             ->leftJoin('customers','sales.customer','customers.id')
                             ->select('sales.*','customers.name as customer',
                                     'customers.phone','customers.email','customers.address')
-                            ->get();
-        $sales_dt   = SaleItem::where('sale_no', $request->id)->get();
-
-        return view('backend.Reports.Sale.bigInvoice', 
-            compact('company','sales','sales_dt'));
+                            ->first();
+        $sales_dt   = SaleItem::where('sale_items.sale_no', $request->id)
+            ->leftJoin('products', 'sale_items.product_id', 'products.id')
+            ->select('sale_items.*','products.code')
+            ->get();
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        return view('backend.Reports.Sale.bigInvoice', compact('company','sales','sales_dt','vat'));
     }
 
     public function bigInvoicePrint(Request $request)
     {
-        $company    = Company::all();
+        $company    = Company::first();
         $sales      = Sale::where('sale_no', $request->id)
                             ->leftJoin('customers','sales.customer','customers.id')
                             ->select('sales.*','customers.name as customer',
                                     'customers.phone','customers.email','customers.address')
-                            ->get();
-        $sales_dt   = SaleItem::where('sale_no', $request->id)->get();
-
-        return view('backend.Reports.Sale.bigInvoicePrint', 
-            compact('company','sales','sales_dt'));
+                            ->first();
+        $sales_dt   = SaleItem::where('sale_items.sale_no', $request->id)
+            ->leftJoin('products', 'sale_items.product_id', 'products.id')
+            ->select('sale_items.*','products.code')
+            ->get();
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        return view('backend.Reports.Sale.bigInvoicePrint', compact('company','sales','sales_dt','vat'));
     }
 
-    
+
     public function mini_invoice(Request $request)
     {
-        $company    = Company::all();
-        $sales      = Sale::where('sale_no', $request->id)
-                            ->leftJoin('customers','sales.customer','customers.id')
-                            ->select('sales.*','customers.name as customer',
-                                    'customers.phone','customers.email','customers.address')
-                            ->get();
-        $sales_dt   = SaleItem::where('sale_no', $request->id)->get();
-        
-        return view('backend.Reports.Sale.miniInvoicePrint2', 
-            compact('company','sales','sales_dt'));
+        $company  = Company::first();
+        $sale     = Sale::where('sale_no', $request->id)
+                        ->leftJoin('customers','sales.customer','customers.id')
+                        ->select('sales.*','customers.name as customer','customers.phone','customers.email','customers.address')
+                        ->first();
+        $sales_dt = SaleItem::where('sale_items.sale_no', $request->id)
+                        ->leftJoin('products', 'sale_items.product_id', 'products.id')
+                        ->select('sale_items.*','products.code')
+                        ->get();
+        $vat      = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        return view('backend.Reports.Sale.miniInvoicePrint', compact('company','sale','sales_dt','vat'));
     }
 
 }
