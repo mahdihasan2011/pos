@@ -15,6 +15,7 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->string('code')->nullable();
             $table->string('name')->nullable();
             $table->integer('quantity')->nullable();
@@ -22,6 +23,8 @@ class CreateStocksTable extends Migration
             $table->double('price', 10,2)->nullable();
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
+
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
         });
     }
 

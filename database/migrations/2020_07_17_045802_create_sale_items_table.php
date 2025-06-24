@@ -15,6 +15,7 @@ class CreateSaleItemsTable extends Migration
     {
         Schema::create('sale_items', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->string('sale_no');
             $table->dateTime('date')->nullable();
             $table->string('name')->nullable();
@@ -23,6 +24,9 @@ class CreateSaleItemsTable extends Migration
             $table->integer('quantity')->nullable();
             $table->double('total', 10,2)->nullable();
             $table->timestamps();
+
+            // Optional: Add foreign key constraint if products table exists
+            // $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
         });
     }
 

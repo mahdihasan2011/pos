@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,9 +44,9 @@ Route::prefix('company/')->name('company.')->group(function () {
     Route::get('destroy', 'CompanyController@destroy')->name('destroy');
 });
 //-------------------------- Settings -------------------------
-Route::prefix('settings/')->name('settings.')->group(function () {
-    Route::get('index', 'SettingController@index')->name('index');
-    Route::post('store', 'SettingController@store')->name('store');
-    Route::get('edit', 'SettingController@edit')->name('edit');
-    Route::post('update', 'SettingController@update')->name('update');
-});
+// Route::prefix('settings/')->name('settings.')->group(function () {
+//     Route::get('index', 'SettingController@index')->name('index');
+//     Route::post('store', 'SettingController@store')->name('store');
+//     Route::get('edit', 'SettingController@edit')->name('edit');
+//     Route::post('update', 'SettingController@update')->name('update');
+// });

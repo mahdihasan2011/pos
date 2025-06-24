@@ -212,13 +212,13 @@ Route::get('current-stock-report-print', [StockController::class, 'current_print
 //     Route::post('update', 'RoleController@update')->name('update');
 // });
 
-// //-------------------------- Settings -------------------------
-// Route::prefix('settings/')->name('settings.')->group(function () {
-//     Route::get('index', 'SettingController@index')->name('index');
-//     Route::post('store', 'SettingController@store')->name('store');
-//     Route::get('edit', 'SettingController@edit')->name('edit');
-//     Route::post('update', 'SettingController@update')->name('update');
-// });
+//-------------------------- Settings -------------------------
+Route::prefix('settings/')->name('settings.')->group(function () {
+    Route::get('index', 'SettingController@index')->name('index');
+    Route::post('store', 'SettingController@store')->name('store');
+    Route::get('edit', 'SettingController@edit')->name('edit');
+    Route::post('update', 'SettingController@update')->name('update');
+});
 
 //-------------------------- Image Upload -------------------------
 Route::post('/image-upload', 'UserController@image_upload')->name('image.upload');
