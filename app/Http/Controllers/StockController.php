@@ -18,15 +18,8 @@ class StockController extends Controller
         $current_st = Stock::orderBy('id', 'DESC')
                         ->leftJoin('products', 'products.id', 'stocks.product_id')
                         ->leftJoin('categories','products.category','categories.id')
-                        // ->leftJoin('purchase_items','products.id','purchase_items.product_id')
                         ->select('stocks.*','products.image','categories.name as category','products.name as product','products.code',/* DB::raw('SUM(purchase_items.quantity) as purchase_qty') */)
-                        // ->groupBy('purchase_items.product_id')
-                        // ->leftJoin('purchase_items', function($join) {
-                        //     $join->on('products.id', '=', 'purchase_items.product_id');
-                        //     $join->where('products.id', '=', 'purchase_items.product_id');
-                        //     $join->addSelect("SUM(purchase_items.quantity) as purchase_qty");
-                        //     $join->groupBy('purchase_items.product_id');
-                        // })
+                        ->where('stocks.status', '=', 1)
                         ->get();
         $tQty = $current_st->sum('quantity');
         $tCst = $current_st->sum('cost');
@@ -64,9 +57,17 @@ class StockController extends Controller
 
     public function destroy(Request $request)
     {
-        $data = Stock::find($request->id);
-        $data->delete();
-        return response()->json();
+        if(Stock::where('id', $request->id)->update([ 'status' => 0 ])) {
+            return response()->json([
+                'type'      => 'info',
+                'message'   => 'Product removed form stock successfully.'
+            ]);
+        } else {
+            return response()->json([
+                'type'      => 'error',
+                'message'   => 'Product not found'
+            ]);
+        }
     }
 
 }

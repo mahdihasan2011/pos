@@ -26,7 +26,7 @@ class CreateSettingsTable extends Migration
             $table->string('sidebar_variant')->nullable();
             $table->string('flat_sidebar')->nullable();
             $table->string('sidebar_child_menu')->nullable();
-            $table->integer('vat_percentage')->nullable();
+            $table->integer('vat_percentage')->default(0)->nullable();
             $table->timestamps();
         });
     }

@@ -3,7 +3,7 @@
 <div class="limiter">
     <div class="container-login100">
         <div class="wrap-login100">
-            <div class="login100-form-title" style="background-image: url({{ asset('public/login') }}/images/5.jpeg);">
+            <div class="login100-form-title" style="background-image: url({{ asset('/login') }}/images/5.jpeg);">
                 <span class="login100-form-title-1">
                     {{ __('POS Software Login') }}
                 </span>

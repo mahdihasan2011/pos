@@ -1,0 +1,1 @@
+@include('backend.Stock.current2')

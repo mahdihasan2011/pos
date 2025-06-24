@@ -293,6 +293,25 @@ class PermissionTableSeeder extends Seeder
             'display_name' => 'Expense Type Delete',
             'module_name' => 'Accounts Management',
         ]);
-
+        Permission::create([
+            'name' => 'discount_type',
+            'display_name' => 'Discount Type List',
+            'module_name' => 'Configuration Management',
+        ]);
+        Permission::create([
+            'name' => 'discount_type_create',
+            'display_name' => 'Discount Type Create',
+            'module_name' => 'Configuration Management',
+        ]);
+        Permission::create([
+            'name' => 'discount_type_update',
+            'display_name' => 'Discount Type Update',
+            'module_name' => 'Configuration Management',
+        ]);
+        Permission::create([
+            'name' => 'discount_type_delete',
+            'display_name' => 'Discount Type Delete',
+            'module_name' => 'Configuration Management',
+        ]);
     }
 }

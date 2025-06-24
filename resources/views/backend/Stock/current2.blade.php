@@ -22,7 +22,7 @@
                                     <th class="text-center">Stock&nbsp;Qty.</th>
                                     <th class="text-right">P.&nbsp;Price (Tk.)</th>
                                     <th class="text-right">Sale&nbsp;Price (Tk.)</th>
-                                    <th class="text-right">Total Price (Tk.)</th>
+{{--                                    <th class="text-right">Total Price (Tk.)</th>--}}
                                     <th class="text-center"><i class="fa fa-cog"></i></th>
                                 </tr>
                             </thead>
@@ -46,7 +46,7 @@
                                     <td class="text-center">{{ $data->quantity }}</td>
                                     <td class="text-right">{{ $data->cost }}</td>
                                     <td class="text-right">{{ $data->price }}</td>
-                                    <td class="text-right">{{ $to = $data->quantity * $data->price }}</td>
+{{--                                    <td class="text-right">{{ $to = $data->quantity * $data->price }}</td>--}}
                                     <td class="text-center">
                                         @can('stock_adjustment')
                                         <button type="button" value="{{ $data->id }}" class="btn btn-primary btn-xs edIT" data-toggle="modal" data-target="#adjust-modal-sm">
@@ -63,17 +63,17 @@
                                 @php $total += $to @endphp
                                 @endforeach
                             </tbody>
-                             <tfoot>
-                                <tr>
-                                    <th class="text-right" colspan="2">Total : </th>
-                                    <td class="text-center"></td>
-                                    <th class="text-center">{{ $tQty }}</th>
-                                    <th class="text-right">{{ $tCst }}</th>
-                                    <th class="text-right">{{ $tPrc }}</th>
-                                    <th class="text-right">{{ $total }}</th>
-                                    <td class="text-right"></td>
-                                </tr>
-                            </tfoot>
+{{--                             <tfoot>--}}
+{{--                                <tr>--}}
+{{--                                    <th class="text-right" colspan="2">Total : </th>--}}
+{{--                                    <td class="text-center"></td>--}}
+{{--                                    <th class="text-center">{{ $tQty }}</th>--}}
+{{--                                    <th class="text-right">{{ $tCst }}</th>--}}
+{{--                                    <th class="text-right">{{ $tPrc }}</th>--}}
+{{--                                    <th class="text-right">{{ $total }}</th>--}}
+{{--                                    <td class="text-right"></td>--}}
+{{--                                </tr>--}}
+{{--                            </tfoot>--}}
                         </table>
                     </div>
                 </div>
@@ -157,18 +157,18 @@
                 //     ' Product has been removed form stock successfully.',
                 //     'success'
                 // )
-                $(function() {
-                    Toast.fire({
-                        type: 'success',
-                        title: '&nbsp; Product removed form stock successfully.'
-                    })
-                });
                 $.ajax({
                     url: "{{ route('stock.destroy') }}",
                     type: 'GET',
                     data: { id: id, },
-                    success: function (){
+                    success: function (data){
                         $("#example1").load(location + " #example1");
+                        $(function() {
+                            Toast.fire({
+                                type: data.type,
+                                title: '&nbsp; '+data.message+'.'
+                            })
+                        });
                     }
                 });
                 } else if (result.dismiss === Swal.DismissReason.cancel) {

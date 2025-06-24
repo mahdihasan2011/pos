@@ -87,9 +87,9 @@ class DashboardController extends Controller
             ->groupBy('payable','date')
             ->get();
         $today_expense = Expense::where('date', $today)->sum('amount');
-//        dd($salesData);
-        return view('backend.Home.dashboard2',
-            compact('sales_due','purchase_due','customers','suppliers','today_sales_count','today_sales_qty','today_sales','today_purchase_count','today_purchase_qty','today_purchase','current_st','tQty','tCst','tPrc','latest_items','this_month_sale','thisMonth','salesData','purchaseData','today_expense'));
+        $this_month_expense = Expense::whereBetween('date', [Carbon::createFromDate($date->format('Y'), $date->format
+        ('m'), 1), Carbon::createFromDate($date->format('Y'), $date->format('m'), $daysCount)])->sum('amount');
+        return view('backend.Home.dashboard2', compact('sales_due','purchase_due','customers','suppliers','today_sales_count','today_sales_qty','today_sales','today_purchase_count','today_purchase_qty','today_purchase','current_st','tQty','tCst','tPrc','latest_items','this_month_sale','thisMonth','salesData','purchaseData','today_expense','this_month_expense'));
     }
 
 }

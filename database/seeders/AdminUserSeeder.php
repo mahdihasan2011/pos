@@ -18,14 +18,14 @@ class AdminUserSeeder extends Seeder
     public function run()
     {
         $user = User::create([
-                            'name' => 'Super Admin',
-                            'email' => 'superadmin@gmail.com',
+                            'name' => 'System Admin',
+                            'email' => 'systemadmin@gmail.com',
                             'password' => Hash::make('123456')
                         ]);
         $role = Role::create([
                             'name' => 'superadmin',
                             'guard_name' => 'web',
-                            'display_name' => 'Super Admin'
+                            'display_name' => 'System Admin'
                         ]);
         $user->assignRole([$role->id]);
 

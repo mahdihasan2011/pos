@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Model\Cart;
 use App\Model\Category;
 use App\Model\Customer;
+use App\Model\DiscountType;
 use App\Model\Product;
 use App\Model\Sale;
 use App\Model\SaleItem;
@@ -36,13 +37,15 @@ class PoSController extends Controller
                             ->join('products', 'products.id', 'stocks.product_id')
                             ->select('stocks.*','products.image','products.category','products.code','products.name')
                             ->where('stocks.quantity','>','0')
+                            ->where('stocks.status', '=', 1)
                             ->get();
         $users      = Customer::orderBy('id', 'DESC')->get();
         $carts      = DB::table('carts')->orderBy('id', 'DESC')->get();
         $tqty       = $carts->sum('quantity');
         $subt       = $carts->sum('total');
+        $discount_type = DiscountType::orderBy('id', 'DESC')->where('ctype', '=', 'Customer')->get();
         $terminal   = Setting::first()->sale_terminal ? Setting::first()->sale_terminal : "";
-        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         if ($terminal == 2){
             $view = 'backend.Pos.terminal2';
         } elseif ($terminal == 3) {
@@ -53,7 +56,7 @@ class PoSController extends Controller
             $view = 'backend.Pos.sale';
         }
         Session::forget('sale_no');
-        return view($view, compact('today','invoice_no','categries','products','users','carts','tqty','subt','vat'));
+        return view($view, compact('today','invoice_no','categries','products','users','carts','tqty','subt','discount_type'));
     }
 
     public function product_search(Request $request)
@@ -62,6 +65,7 @@ class PoSController extends Controller
             $data = Stock::join('products', 'products.id', 'stocks.product_id')
                 ->select('stocks.*','products.image','products.category','products.code','products.name')
                 ->where('stocks.quantity','>','0')
+                ->where('stocks.status', '=', 1)
                 ->where('products.code', 'LIKE', '%'.$request->value.'%')
                 ->get();
             if (count($data) > 0) {
@@ -82,6 +86,7 @@ class PoSController extends Controller
         $products   = Stock::join('products', 'products.id', 'stocks.product_id')
                         ->select('stocks.*','products.image','products.category','products.code','products.name')
                         ->where('products.code', $request->code)
+                        ->where('stocks.status', '=', 1)
                         ->first();
         $pcode      = $products->code;
         $cart       = DB::table('carts')->where('code', $pcode)->first();
@@ -109,7 +114,7 @@ class PoSController extends Controller
         $tqty       = DB::table('carts')->sum('quantity');
         $subt       = DB::table('carts')->sum('total');
         $carts      = DB::table('carts')->where('code', $pcode)->first();
-        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         $vatamnt    = ($subt * $vat) / 100;
         $payable    = $subt + $vatamnt;
         return response()->json([
@@ -122,10 +127,44 @@ class PoSController extends Controller
         ]);
     }
 
-    public function customer_details(Request $request)
+    public function cash_discount(Request $request)
     {
-        $data = Customer::where('id', $request->id)->get();
-        return response()->json($data);
+        $tqty           = DB::table('carts')->sum('quantity');
+        $subt           = DB::table('carts')->sum('total');
+        $vat            = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
+        $vatamnt        = ($subt * $vat) / 100;
+        $payable        = $subt + $vatamnt;
+        return response()->json([
+            'tqty'      => $tqty,
+            'subt'      => $subt,
+            'vat'       => $vatamnt,
+            'payable'   => $payable,
+            'message'   => "Discount given !!",
+        ]);
+    }
+
+    public function customer_discount(Request $request)
+    {
+        $discount_type  = Customer::where('customers.id', $request->id)
+                            ->join('discount_types','customers.category','LIKE','discount_types.name')
+                            ->select('discount_types.amount')
+                            ->first();
+        $tqty           = DB::table('carts')->sum('quantity');
+        $subt           = DB::table('carts')->sum('total');
+        $disc           = $discount_type->amount;
+        $d              = ($subt * $disc) / 100;
+        $payabl         = $subt - $d;
+        $vat            = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
+        $vatamnt        = ($payabl * $vat) / 100;
+        $payable        = $payabl + $vatamnt;
+        return response()->json([
+            'tqty'      => $tqty,
+            'subt'      => $subt,
+            'vat'       => $vatamnt,
+            'payable'   => $payable,
+            'disc'      => $disc,
+            'message'   => "Discount given !!",
+        ]);
     }
 
     public function customer_store(Request $request)
@@ -157,6 +196,7 @@ class PoSController extends Controller
     {
         $products   = Stock::join('products', 'products.id', 'stocks.product_id')
                             ->select('stocks.*','products.image','products.category','products.code','products.name')
+                            ->where('stocks.status', '=', 1)
                             ->where('stocks.id', $request->id)
                             ->first();
         $pcode      = $products->code;
@@ -186,7 +226,7 @@ class PoSController extends Controller
         $tqty       = DB::table('carts')->sum('quantity');
         $subt       = DB::table('carts')->sum('total');
         $carts      = DB::table('carts')->where('code', $pcode)->first();
-        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         $vatamnt    = ($subt * $vat) / 100;
         $payable    = $subt + $vatamnt;
         return response()->json([
@@ -204,7 +244,7 @@ class PoSController extends Controller
         DB::table('carts')->where('id', $request->id)->delete();
         $tqty       = DB::table('carts')->sum('quantity');
         $subt       = DB::table('carts')->sum('total');
-        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         $vatamnt    = ($subt * $vat) / 100;
         $payable    = $subt + $vatamnt;
         return response()->json([
@@ -230,7 +270,7 @@ class PoSController extends Controller
                     ->update(['total' => $total]);
         $tqty       = DB::table('carts')->sum('quantity');
         $subt       = DB::table('carts')->sum('total');
-        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         $vatamnt    = ($subt * $vat) / 100;
         $payable    = $subt + $vatamnt;
         return response()->json([
@@ -253,7 +293,7 @@ class PoSController extends Controller
                     ->update(['price' => $price, 'total' => $total]);
         $tqty       = DB::table('carts')->sum('quantity');
         $subt       = DB::table('carts')->sum('total');
-        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         $vatamnt    = ($subt * $vat) / 100;
         $payable    = $subt + $vatamnt;
         return response()->json([
@@ -286,7 +326,7 @@ class PoSController extends Controller
         } else {
             $payabl     = $subt - $disc;
         }
-        $vat = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         $vatamnt        = ($payabl * $vat) / 100;
         $payable        = $payabl + $vatamnt;
         return response()->json([
@@ -313,7 +353,7 @@ class PoSController extends Controller
         } else {
             $payabl     = $subt - $disc;
         }
-        $vat            = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 10;
+        $vat        = Setting::first()->vat_percentage ? Setting::first()->vat_percentage : 0;
         $vatamnt        = ($payabl * $vat) / 100;
         $payable        = $payabl + $vatamnt;
         return response()->json([
@@ -363,7 +403,7 @@ class PoSController extends Controller
         }
         // dd($request->all());
         $data                   = new Sale();
-        $data->sale_no          = $request->invoice_no ? $request->invoice_no : $invoice_no;
+        $data->sale_no          = $invoice_no;
         $data->customer         = !empty($request->customer) ? $request->customer : 'Cash';
         $data->date             = $request->date ? $request->date : $today;
         $data->amount           = $request->due_amount;
@@ -388,7 +428,7 @@ class PoSController extends Controller
                     ->insert([
                             'name'      => $item->name,
                             'product_id'=> $item->product_id,
-                            'sale_no'   => $request->invoice_no ? $request->invoice_no : $invoice_no,
+                            'sale_no'   => $invoice_no,
                             'date'      => $request->date ? $request->date : $today,
                             'price'     => $item->price,
                             'quantity'  => $item->quantity,

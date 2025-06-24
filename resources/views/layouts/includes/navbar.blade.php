@@ -121,7 +121,7 @@
             <a href="javascript:void(0)" class="nav-link"><h5>৳&nbsp;<b class="BILL"></b></h5></a>
         </li> -->
         <li class="nav-item">
-            <a href="{{ route('pos.point_of_sale') }}" data-toggle="tooltip" data-placement="bottom" title="Go to Sale Terminal" class="nav-link">
+            <a href="{{ route('pos.terminal') }}" data-toggle="tooltip" data-placement="bottom" title="Go to Sale Terminal" class="nav-link">
               <i class="fas fa-cart-arrow-down nav-icon"></i>
             </a>
         </li>

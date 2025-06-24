@@ -64,3 +64,10 @@
 <!-- FilePond with JavaScript -->
 {{-- <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script> --}}
 <script src="{{ asset('public/master') }}/plugins/filepond/filepond@4.30.3.js"></script>
+<!-- Highcharts Links -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>

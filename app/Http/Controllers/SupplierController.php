@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\DiscountType;
 use App\Model\Supplier;
 use Illuminate\Http\Request;
 
@@ -11,11 +12,12 @@ class SupplierController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index()
     {
         $supplier = Supplier::orderBy('id', 'DESC')->get();
-        return view('backend.Configuration.supplier', compact('supplier'));
+        $discount_type = DiscountType::orderBy('id', 'DESC')->where('ctype', '=', 'Supplier')->get();
+        return view('backend.Configuration.supplier', compact('supplier','discount_type'));
     }
 
     public function store(Request $request)
