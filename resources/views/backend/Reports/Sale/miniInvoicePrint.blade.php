@@ -103,7 +103,7 @@
             @endif
             @if (!empty($sale->vat))
                 <tr>
-                    <td style="text-align: right;">Vat ({{ $vat }}%) : </td>
+                    <td style="text-align: right;">Vat : </td>
                     <td style="text-align: right;"> {{ $sale->vat  }} ৳</td>
                 </tr>
             @endif

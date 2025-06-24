@@ -125,7 +125,7 @@
                           @endif
                             @if (!empty($sales->vat))
                                 <tr>
-                                    <th>Vat ({{ $vat }}%) : (Tk.)</th>
+                                    <th>Vat : (Tk.)</th>
                                     <td>{{ $sales->vat }}</td>
                                 </tr>
                             @endif

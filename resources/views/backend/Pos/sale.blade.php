@@ -6,51 +6,57 @@
     <style></style>
 @endsection
 @section('content')
-<div class="content-wrapper pb-0">
-    <section class="content pt-1">
-        <div class="row">
-            <div class="col-12">
-                <form id="CartStore">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 form-group">
-                                    Invoice&nbsp;#&nbsp;<small>{{ $invoice_no }}</small>
-                                    <input type="hidden" name="invoice_no" value="{{ $invoice_no }}"/>
-                                </div>
-                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 form-group">
-                                    @can('sale_date')
-                                    <input type="date" value="{{ $today }}" name="date" class="form-control form-control-sm"/>
-                                    @endcan
-                                </div>
-                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 form-group">
-                                    <select name="customer" class="select2 form-control form-control-sm"
-                                        data-placeholder="Select" data-live-search="true" data-style="btn-primary"
-                                        title="Select Customer" data-toggle="tooltip" data-placement="top" required>
-                                        <option value="">Select Customer</option>
-                                        <option value="null">Add Customer</option>
-                                        <option value="Cash" selected>Cash</option>
-                                        @foreach ($users as $data)
-                                            <option value="{{ $data->id }}">{{ $data->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-6 form-group">
-                                    <select class="select2 form-control form-control-sm"
-                                        data-live-search="true" data-style="btn-primary" name="addProduct" data-placeholder="Select Product"
-                                        title="Select Product" data-toggle="tooltip" data-placement="top">
-                                        <option value="">Select Product</option>
-                                        @foreach ($products as $data)
-                                        <option value="{{ $data->id }}">{{ $data->name }} - {{ $data->code }} &nbsp; ({{ $data->quantity }})</option>
-                                        @endforeach
-                                    </select>
+    <div class="content-wrapper pb-0">
+        <section class="content pt-1">
+            <div class="row">
+                <div class="col-12">
+                    <form id="CartStore">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 form-group">
+                                        Sale Invoice&nbsp;#&nbsp;<small>{{ $invoice_no }}</small>
+                                        <input type="hidden" name="invoice_no" value="{{ $invoice_no }}"/>
+                                    </div>
+                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 form-group">
+                                        @can('sale_date')
+                                            <input type="date" value="{{ $today }}" name="date"
+                                                   class="form-control form-control-sm"/>
+                                        @endcan
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 form-group">
+                                        <select name="customer" class="select2 form-control form-control-sm"
+                                                data-placeholder="Select" data-live-search="true"
+                                                data-style="btn-primary"
+                                                title="Select Customer" data-toggle="tooltip" data-placement="top"
+                                                required>
+                                            <option value="">Select Customer</option>
+                                            <option value="null">Add Customer</option>
+                                            <option value="Cash" selected>Cash Sale</option>
+                                            @foreach ($users as $data)
+                                                <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-6 form-group">
+                                        <select class="select2 form-control form-control-sm"
+                                                data-live-search="true" data-style="btn-primary" name="addProduct"
+                                                data-placeholder="Select Product"
+                                                title="Select Product" data-toggle="tooltip" data-placement="top">
+                                            <option value="">Select Product</option>
+                                            @foreach ($products as $data)
+                                                <option value="{{ $data->id }}">{{ $data->name }} - {{ $data->code }}
+                                                    &nbsp; ({{ $data->quantity }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body row py-1">
-                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
-                                <table id="CartExample" class="table table-sm table-head-fixed">
-                                    <thead>
+                            <div class="card-body row py-1">
+                                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                                    <table id="CartExample" class="table table-sm table-head-fixed">
+                                        <thead>
                                         <tr>
                                             <th>SL.</th>
                                             <th>Description</th>
@@ -59,210 +65,225 @@
                                             <th class="text-right">Total</th>
                                             <th></th>
                                         </tr>
-                                    </thead>
-                                    <tbody>
+                                        </thead>
+                                        <tbody>
                                         @php $i = 1 @endphp
                                         @foreach ($carts as $data)
-                                        <tr id="product_id_{{ $data->id }}">
-                                            <td class="form-control-sm">{{ $i++ }}.</td>
-                                            <td>
+                                            <tr id="product_id_{{ $data->id }}">
+                                                <td class="form-control-sm">{{ $i++ }}.</td>
+                                                <td>
                                                 {{ $data->name }} <!--<small>( {{ $data->code }} )</small>-->
-                                            </td>
-                                            <td>
-                                                <input class="QTY form-control form-control-sm text-center" type="text"
-                                                    name="quantity" value="{{ $data->quantity }}" data-id="{{ $data->code }}"/>
-                                            </td>
-                                            <td>
-                                                <input class="PRICE form-control form-control-sm text-right" type="text"
-                                                    name="price" value="{{ $data->price }}" data-id="{{ $data->code }}"/>
-                                            </td>
-                                            <td class="text-right">{{ $data->total }}</td>
-                                            <td class="text-right">
-                                                <a href="javascript:void(0)" data-id="{{ $data->id }}" class="DEL btn btn-danger btn-xs">
-                                                    <i class="fas fa-minus-circle"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td>
+                                                    <input class="QTY form-control form-control-sm text-center"
+                                                           type="text"
+                                                           name="quantity" value="{{ $data->quantity }}"
+                                                           data-id="{{ $data->code }}"/>
+                                                </td>
+                                                <td>
+                                                    <input class="PRICE form-control form-control-sm text-right"
+                                                           type="text"
+                                                           name="price" value="{{ $data->price }}"
+                                                           data-id="{{ $data->code }}"/>
+                                                </td>
+                                                <td class="text-right">{{ $data->total }}</td>
+                                                <td class="text-right">
+                                                    <a href="javascript:void(0)" data-id="{{ $data->id }}"
+                                                       class="DEL btn btn-danger btn-xs">
+                                                        <i class="fas fa-minus-circle"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                                <table class="table table-sm ">
-                                    <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <table class="table table-sm ">
+                                        <tbody>
                                         <tr>
-                                            <th class="text-right form-control-sm">Total Quantity : </th>
+                                            <th class="text-right form-control-sm">Total Quantity :</th>
                                             <td>
                                                 <input class="text-center form-control form-control-sm TQTY"
-                                                    name="total_qty" value="0" readonly/>
+                                                       name="total_qty" value="0" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">SubTotal (৳) : </th>
+                                            <th class="text-right form-control-sm">SubTotal (৳) :</th>
                                             <td>
                                                 <input class="text-right form-control form-control-sm SUBT"
-                                                    name="sub_total" value="0" readonly/>
+                                                       name="sub_total" value="0" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">Discount : </th>
+                                            <th class="text-right form-control-sm">Discount :</th>
                                             <td class="form-inline">
                                                 <input class="text-center DISC col-xl-8 col-lg-8 col-md-8 col-sm-8
-                                                    col-8 form-control form-control-sm" value="0" name="discount"
-                                                    type="number" title="Input discount amount"
-                                                    data-toggle="tooltip" data-placement="top"/>
+                                                col-8 form-control form-control-sm" value="0" name="discount"
+                                                       type="number" title="Input discount amount"
+                                                       data-toggle="tooltip" data-placement="top"/>
                                                 <select class="DISCTYPE col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4
-                                                    form-control form-control-sm" name="disc_type" title="Discount type"
-                                                    data-toggle="tooltip" data-placement="top">
+                                                form-control form-control-sm" name="disc_type" title="Discount type"
+                                                        data-toggle="tooltip" data-placement="top">
                                                     <option id="1" value="1">%</option>
                                                     <option id="2" value="2">৳</option>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">Vat Amount ({{ $vat }}%) : </th>
+                                            <th class="text-right form-control-sm">Vat Amount
+                                                ({{ $settings->vat_percentage }}%) :
+                                            </th>
                                             <td>
-                                                <input class="text-right form-control form-control-sm VAT" value="0" name="vat" readonly>
+                                                <input class="text-right form-control form-control-sm VAT" value="0"
+                                                       name="vat" readonly>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">Payable Amount (৳) : </th>
+                                            <th class="text-right form-control-sm">Payable Amount (৳) :</th>
                                             <td>
                                                 <input class="text-right form-control form-control-sm PAY"
-                                                    value="0" name="payable" readonly>
+                                                       value="0" name="payable" readonly>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">Paid Amount (৳) : </th>
+                                            <th class="text-right form-control-sm">Paid Amount (৳) :</th>
                                             <td>
                                                 <input class="text-center form-control form-control-sm PAID"
-                                                    value="" name="paid" type="number" title="Input paid amount"
-                                                    data-toggle="tooltip" data-placement="top" required/>
+                                                       value="" name="paid" type="number" title="Input paid amount"
+                                                       data-toggle="tooltip" data-placement="top" required/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">Due Amount (৳) : </th>
+                                            <th class="text-right form-control-sm">Due Amount (৳) :</th>
                                             <td>
                                                 <input class="text-right form-control form-control-sm DUE"
-                                                    value="0" name="due" readonly/>
+                                                       value="0" name="due" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">Return (৳) : </th>
+                                            <th class="text-right form-control-sm">Return (৳) :</th>
                                             <td>
                                                 <input class="text-right form-control form-control-sm RETURN"
-                                                    value="0" name="return" readonly/>
+                                                       value="0" name="return" readonly/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="text-right form-control-sm">Payment Type : </th>
+                                            <th class="text-right form-control-sm">Payment Type :</th>
                                             <td>
                                                 <select class="payment_type form-control form-control-sm" id="pay_type"
-                                                    name="payment_type" title="Payment Type" data-toggle="tooltip" data-placement="top">
+                                                        name="payment_type" title="Payment Type" data-toggle="tooltip"
+                                                        data-placement="top">
                                                     <option value="Cash">Cash</option>
                                                     <option value="Bkash">Bkash</option>
                                                     <option value="Rocket">Rocket</option>
                                                     <option value="Nagad">Nagad</option>
                                                 </select>
                                                 <input placeholder="Payment Number" type="number" name="payment_number"
-                                                    class="payment_number form-control form-control-sm my-2"
-                                                    title="Payment Number" data-toggle="tooltip" data-placement="top">
+                                                       class="payment_number form-control form-control-sm my-2"
+                                                       title="Payment Number" data-toggle="tooltip"
+                                                       data-placement="top">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-right">
                                                 <button class="btn btn-danger btn-sm CLEAR" type="button"
-                                                    title="Remove all items from cart"
-                                                    data-toggle="tooltip" data-placement="top">
+                                                        title="Remove all items from cart"
+                                                        data-toggle="tooltip" data-placement="top">
                                                     <i class="far fa-trash-alt"></i>
                                                 </button>
                                             </td>
                                             <td class="text-left">
                                                 <button class="btn btn-success btn-sm CATSAV" type="submit"
-                                                    title="Confirm Sale"
-                                                    data-toggle="tooltip" data-placement="top">
+                                                        title="Confirm Sale"
+                                                        data-toggle="tooltip" data-placement="top">
                                                     <i class="fas fa-check-circle"></i>&nbsp;<b>Confirm</b>
                                                 </button>
                                                 @if (session('sale_no'))
                                                     <a href="{{ route('pos.mini.invoice',['id'=>session('sale_no')]) }}"
-                                                        class="btn btn-info btn-sm" target="_blank" title="Print Invoice" data-toggle="tooltip" data-placement="top">
+                                                       class="btn btn-info btn-sm" target="_blank" title="Print Invoice"
+                                                       data-toggle="tooltip" data-placement="top">
                                                         <i class="fas fa-print"></i>
                                                     </a>
                                                 @endif
                                             </td>
                                         </tr>
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-    <!------ modal ------>
-    <div class="modal fade" id="CustomerModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="ModalHeader"></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    </form>
                 </div>
-                <form class="form-horizontal" id="CustomerForm">
-                    <div class="modal-body">
-                        <input name="id" id="id" type="hidden">
-                        <div class="form-group row">
-                            <label for="name" class="col-sm-2 col-form-sm-label">Name <span style="color:gray">*</span></label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control form-control-sm name" name="name" id="name" placeholder="Enter {{ $controller == 'PurchaseController' ? 'Supplier' : 'Customer' }} Name Here ...">
+            </div>
+        </section>
+        <!------ modal ------>
+        <div class="modal fade" id="CustomerModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="ModalHeader"></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form class="form-horizontal" id="CustomerForm">
+                        <div class="modal-body">
+                            <input name="id" id="id" type="hidden">
+                            <div class="form-group row">
+                                <label for="name" class="col-sm-2 col-form-sm-label">Name <span
+                                        style="color:gray">*</span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control form-control-sm name" name="name" id="name"
+                                           placeholder="Enter {{ $controller == 'PurchaseController' ? 'Supplier' : 'Customer' }} Name Here ...">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="phone" class="col-sm-2 col-form-sm-label">Phone</label>
-                            <div class="col-sm-10">
-                                <input type="number" class="form-control form-control-sm phone"
-                                   name="phone" id="phone" placeholder="Enter Customer Phone Number Here ...">
+                            <div class="form-group row">
+                                <label for="phone" class="col-sm-2 col-form-sm-label">Phone</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control form-control-sm phone"
+                                           name="phone" id="phone" placeholder="Enter Customer Phone Number Here ...">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="category" class="col-sm-2 col-form-sm-label">Category</label>
-                            <div class="col-sm-10">
-                                <select class="form-control form-control-sm category" name="category"
+                            <div class="form-group row">
+                                <label for="category" class="col-sm-2 col-form-sm-label">Category</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control form-control-sm category" name="category"
                                         id="category" title="Select Customer Category">
-                                    <option value="Normal">Normal (Blue)</option>
-                                    <option value="Vip">Vip (Yellow)</option>
-                                    <option value="Special">Special (Orange)</option>
-                                    <option value="Blocked">Blocked (Red)</option>
-                                </select>
+                                        @foreach($discount_type as $discount)
+                                        <option value="{{ $discount->name }}">{{ $discount->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="balance" class="col-sm-2 col-form-sm-label">Balance</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control form-control-sm balance" value="0"
+                                           name="balance"
+                                           id="balance" placeholder="Enter Customer Balance Here ...">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="address" class="col-sm-2 col-form-sm-label">Address</label>
+                                <div class="col-sm-10">
+                                <textarea class="form-control form-control-sm address" name="address" id="address"
+                                          rows="2"
+                                          placeholder="Enter Customer Address Here ..."></textarea>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="balance" class="col-sm-2 col-form-sm-label">Balance</label>
-                            <div class="col-sm-10">
-                                <input type="number" class="form-control form-control-sm balance" value="0" name="balance"
-                                       id="balance" placeholder="Enter Customer Balance Here ...">
-                            </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success btn-sm" id="CustomerSave"
+                                    value="create"></button>
                         </div>
-                        <div class="form-group row">
-                            <label for="address" class="col-sm-2 col-form-sm-label">Address</label>
-                            <div class="col-sm-10">
-                                <textarea class="form-control form-control-sm address" name="address" id="address" rows="2"
-                                    placeholder="Enter Customer Address Here ..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success btn-sm" id="CustomerSave" value="create"></button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 @endsection
 @section('customJs')
     <script type="text/javascript">
@@ -285,7 +306,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            $('select[name="customer"]').on('change click', function() {
+            $('select[name="customer"]').on('change click', function () {
                 let id = $(this).val();
                 if (id === 'null') {
                     $('#CustomerSave').val("create-customer");
@@ -293,15 +314,62 @@
                     $('#CustomerSave').html("Save");
                     $('#ModalHeader').html("Add <small>( Customer Information )</small>");
                     $('#CustomerModal').modal('show');
+                } else if (id === 'Cash') {
+                    $.ajax({
+                        url: "{{ route('pos.cash.discount') }}",
+                        type: "GET",
+                        data: {id: id},
+                        success: function (response) {
+                            $('.PAY').val(response.payable.toFixed(2));
+                            $('.BILL').html(response.payable.toFixed(2));
+                            $('.VAT').val(Math.round(response.vat));
+                            $('.PAID').val('');
+                            $('.DUE').val(response.payable.toFixed(2));
+                            $('.RETURN').val('0');
+                            $(function () {
+                                Toast.fire({
+                                    type: 'info',
+                                    title: '&nbsp; Sale on Cash'
+                                })
+                            });
+                        },
+                        error: function (error) {
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: "{{ route('pos.customer.discount') }}",
+                        type: "GET",
+                        data: {id: id},
+                        success: function (response) {
+                            $('.TQTY').val(response.tqty);
+                            $('.SUBT').val(response.subt.toFixed(2));
+                            $('.DISC').val(response.disc);
+                            $('.PAY').val(response.payable.toFixed(2));
+                            $('.BILL').html(response.payable.toFixed(2));
+                            $('.VAT').val(Math.round(response.vat));
+                            $('.PAID').val('');
+                            $('.DUE').val(response.payable.toFixed(2));
+                            $('.RETURN').val('0');
+                            $(function () {
+                                Toast.fire({
+                                    type: 'info',
+                                    title: '&nbsp; ' + response.message + ''
+                                })
+                            });
+                        },
+                        error: function (error) {
+                        }
+                    });
                 }
             });
-            $('select[name="addProduct"]').change('select2:selected', function(e) {
+            $('select[name="addProduct"]').change('select2:selected', function (e) {
                 let id = $(this).val();
-                if(id != '') {
+                if (id != '') {
                     $.ajax({
                         url: "{{ route('pos.item.add') }}",
                         type: "GET",
-                        data: { id: id  },
+                        data: {id: id},
                         success: function (response) {
                             // var product = '<tr id="product_id_' + response.carts.id + '"><td class="form-control-sm">' + response.carts.id + '.</td><td>' + response.carts.name + ' <small>( ' + response.carts.code + ' )</small></td><td><input class="QTY form-control form-control-sm text-center" value="' + response.carts.quantity + '" name="quantity" data-id="' + response.carts.code + '" type="text"/></td><td><input class="PRICE form-control form-control-sm text-right" value="' + response.carts.price + '" data-id="' + response.carts.code + '" name="price" type="text"/></td><td class="text-right">' + response.carts.total + '</td>';
                             // product += '<td class="text-right"><a href="javascript:void(0)" data-id="' + response.carts.id + '" class="DEL btn btn-danger btn-xs"><i class="fas fa-minus-circle"></i></a></td></tr>';
@@ -318,7 +386,7 @@
                             $('.BILL').html(response.subt.toFixed(2));
                             Toast.fire({
                                 type: 'success',
-                                title: ' &nbsp;'+response.message+'',
+                                title: ' &nbsp;' + response.message + '',
                             });
                             $('select[name="addProduct"]').val('').change();
                         },
@@ -326,7 +394,7 @@
                             $(function () {
                                 Toast.fire({
                                     type: 'error',
-                                    title: ' &nbsp;'+error+''
+                                    title: ' &nbsp;' + error + ''
                                 })
                             });
                         }
@@ -350,7 +418,7 @@
                 if (result.value) {
                     $.ajax({
                         type: "GET",
-                        url: "{{ url('point-of-sale/item/remove') }}"+'/'+id,
+                        url: "{{ url('point-of-sale/item/remove') }}" + '/' + id,
                         success: function (data) {
                             // $("#product_id_" + id).remove();
                             $("#CartExample").load(location + " #CartExample");
@@ -363,10 +431,10 @@
                             $('.DUE').val(data.subt.toFixed(2));
                             $('.RETURN').val('0');
                             $('.BILL').html(data.subt.toFixed(2));
-                            $(function() {
+                            $(function () {
                                 Toast.fire({
                                     type: 'info',
-                                    title: ' &nbsp;'+data.message+'',
+                                    title: ' &nbsp;' + data.message + '',
                                 })
                             });
                         },
@@ -374,21 +442,22 @@
                             $(function () {
                                 Toast.fire({
                                     type: 'error',
-                                    title: ' &nbsp;'+error.message+'',
+                                    title: ' &nbsp;' + error.message + '',
                                 })
                             });
                         }
                     });
-                };
+                }
+                ;
             })
         });
         $('body').on('keyup', '.PRICE', function () {
-            var price   = $(this).val();
-            var id      = $(this).data("id");
+            var price = $(this).val();
+            var id = $(this).data("id");
             $.ajax({
                 url: "{{ route('pos.item.price') }}",
                 type: 'GET',
-                data: { id : id, price : price },
+                data: {id: id, price: price},
                 success: function (data) {
                     $("#CartExample").load(location + " #CartExample");
                     $('.TQTY').val(data.tqty);
@@ -400,18 +469,18 @@
                     $('.DUE').val(data.subt.toFixed(2));
                     $('.RETURN').val('0');
                     $('.BILL').html(data.subt.toFixed(2));
-                    $(function() {
+                    $(function () {
                         Toast.fire({
                             type: 'success',
-                            title: '&nbsp; '+data.message+'',
+                            title: '&nbsp; ' + data.message + '',
                         })
                     });
                 },
                 error: function (data) {
-                    $(function() {
+                    $(function () {
                         Toast.fire({
                             type: 'error',
-                            title: '&nbsp; '+data.message+'',
+                            title: '&nbsp; ' + data.message + '',
                         })
                     });
                 }
@@ -419,11 +488,11 @@
         });
         $('body').on('keyup', '.QTY', function () {
             var qty = $(this).val();
-            var id  = $(this).data("id");
+            var id = $(this).data("id");
             $.ajax({
                 url: "{{ route('pos.item.quantity') }}",
                 type: 'GET',
-                data: { id : id, qty : qty },
+                data: {id: id, qty: qty},
                 success: function (data) {
                     $("#CartExample").load(location + " #CartExample");
                     $('.TQTY').val(data.tqty);
@@ -435,30 +504,30 @@
                     $('.DUE').val(data.subt.toFixed(2));
                     $('.RETURN').val('0');
                     $('.BILL').html(data.subt.toFixed(2));
-                    $(function() {
+                    $(function () {
                         Toast.fire({
                             type: 'success',
-                            title: '&nbsp; '+data.message+''
+                            title: '&nbsp; ' + data.message + ''
                         })
                     });
                 },
                 error: function (data) {
-                    $(function() {
+                    $(function () {
                         Toast.fire({
                             type: 'error',
-                            title: '&nbsp; '+data.message+''
+                            title: '&nbsp; ' + data.message + ''
                         })
                     });
                 }
             });
         });
-        $(".DISCTYPE").on('change', function () {
-            var id  = $(".DISC").val();
+        $(".DISCTYPE").on('change click', function () {
+            var id = $(".DISC").val();
             var dty = $(this).val();
             $.ajax({
                 url: "{{ route('pos.discount.type') }}",
                 type: 'GET',
-                data: { disc : id, disc_type : dty },
+                data: {disc: id, disc_type: dty},
                 success: function (response) {
                     $('.PAY').val(response.payable.toFixed(2));
                     $('.BILL').html(response.payable.toFixed(2));
@@ -466,22 +535,22 @@
                     $('.PAID').val('');
                     $('.DUE').val(response.payable.toFixed(2));
                     $('.RETURN').val('0');
-                    $(function() {
+                    $(function () {
                         Toast.fire({
                             type: 'success',
-                            title: '&nbsp; '+response.message+''
+                            title: '&nbsp; ' + response.message + ''
                         })
                     });
                 }
             });
         });
         $(".DISC").on('keyup', function () {
-            var id  = $(this).val();
+            var id = $(this).val();
             var dty = $(".DISCTYPE").val();
             $.ajax({
                 url: "{{ route('pos.discount') }}",
                 type: 'GET',
-                data: { disc : id, disc_type : dty },
+                data: {disc: id, disc_type: dty},
                 success: function (response) {
                     $('.PAY').val(response.payable.toFixed(2));
                     $('.BILL').html(response.payable.toFixed(2));
@@ -489,38 +558,38 @@
                     $('.PAID').val('');
                     $('.DUE').val(response.payable.toFixed(2));
                     $('.RETURN').val('0');
-                    $(function() {
+                    $(function () {
                         Toast.fire({
                             type: 'success',
-                            title: '&nbsp; '+response.message+''
+                            title: '&nbsp; ' + response.message + ''
                         })
                     });
                 }
             });
         });
         $(".PAID").on('keyup', function () {
-            var paid    = $(this).val();
-            var pay     = $(".PAY").val();
+            var paid = $(this).val();
+            var pay = $(".PAY").val();
             $.ajax({
                 url: "{{ route('pos.paid.amount') }}",
                 type: 'GET',
-                data: { paid : paid, pay : pay },
+                data: {paid: paid, pay: pay},
                 success: function (response) {
                     $('.DUE').val(response.due.toFixed(2));
                     $('.RETURN').val(response.return.toFixed(2));
-                    $(function() {
-                        Toast.fire({
-                            type: 'success',
-                            title: '&nbsp; '+response.message+''
-                        })
-                    });
+                    // $(function() {
+                    //     Toast.fire({
+                    //         type: 'success',
+                    //         title: '&nbsp; '+response.message+''
+                    //     })
+                    // });
                 }
             });
         });
         $('.payment_number').hide();
-        $('#pay_type').change(function(){
+        $('#pay_type').change(function () {
             var val = $(this).val();
-            if(val == 'Cash') {
+            if (val == 'Cash') {
                 $('.payment_number').hide();
             } else {
                 $('.payment_number').show();
@@ -568,7 +637,7 @@
                         required: "Please enter Customer Address",
                     },
                 },
-                submitHandler: function(form) {
+                submitHandler: function (form) {
                     const Toast = Swal.mixin({
                         toast: true,
                         position: 'top',
@@ -589,19 +658,19 @@
                                 $('#CustomerModal').modal('hide');
                                 $('#CustomerSave').html('Save');
                                 $('#CustomerSave').attr('disabled', false);
-                                $(function() {
+                                $(function () {
                                     Toast.fire({
                                         type: 'success',
-                                        title: ' &nbsp;'+data.message+' '
+                                        title: ' &nbsp;' + data.message + ' '
                                     })
                                 });
-                                $('select[name="customer"]').append('<option value="'+data.info.id+'" selected="selected">'+ data.info.name +'</option>');
+                                $('select[name="customer"]').append('<option value="' + data.info.id + '" selected="selected">' + data.info.name + '</option>');
                             },
                             error: function (error) {
-                                $(function() {
+                                $(function () {
                                     Toast.fire({
                                         type: 'error',
-                                        title: ' &nbsp;'+error.message+' '
+                                        title: ' &nbsp;' + error.message + ' '
                                     })
                                 });
                                 $('#CustomerSave').html('Save');
@@ -642,7 +711,7 @@
                         required: "Paid amount is required",
                     },
                 },
-                submitHandler: function(form) {
+                submitHandler: function (form) {
                     swalWithBootstrapButtons.fire({
                         title: 'Are you sure?',
                         text: "You want to confirm this Sale ??",
@@ -659,20 +728,20 @@
                                 type: "POST",
                                 url: "{{ route('pos.item.store') }}",
                                 data: {
-                                    '_token'        : $('input[name=_token]').val(),
-                                    'invoice_no'    : $('input[name=invoice_no]').val(),
-                                    'date'		    : $('input[name=date]').val(),
-                                    'customer'	    : $('select[name=customer]').val(),
-                                    'total_qty'     : $('input[name=total_qty]').val(),
-                                    'sub_total'     : $('input[name=sub_total]').val(),
-                                    'discount'      : $('input[name=discount]').val(),
-                                    'disc_type'     : $('.DISCTYPE').val(),
-                                    'vat'           : $('.VAT').val(),
-                                    'payable'       : $('input[name=payable]').val(),
-                                    'paid'          : $('input[name=paid]').val(),
-                                    'return'        : $('input[name=return]').val(),
-                                    'due'           : $('input[name=due]').val(),
-                                    'payment_type'  : $('select[name=payment_type]').val(),
+                                    '_token': $('input[name=_token]').val(),
+                                    'invoice_no': $('input[name=invoice_no]').val(),
+                                    'date': $('input[name=date]').val(),
+                                    'customer': $('select[name=customer]').val(),
+                                    'total_qty': $('input[name=total_qty]').val(),
+                                    'sub_total': $('input[name=sub_total]').val(),
+                                    'discount': $('input[name=discount]').val(),
+                                    'disc_type': $('.DISCTYPE').val(),
+                                    'vat': $('.VAT').val(),
+                                    'payable': $('input[name=payable]').val(),
+                                    'paid': $('input[name=paid]').val(),
+                                    'return': $('input[name=return]').val(),
+                                    'due': $('input[name=due]').val(),
+                                    'payment_type': $('select[name=payment_type]').val(),
                                     'payment_number': $('input[name=payment_number]').val(),
                                 },
                                 success: function (response) {
@@ -687,28 +756,29 @@
                                     $('.DUE').val(0);
                                     $('.RETURN').val(0);
                                     $('.BILL').html(0);
-                                    $(function() {
+                                    $(function () {
                                         Toast.fire({
                                             type: 'success',
-                                            title: '&nbsp; '+response.message+''
+                                            title: '&nbsp; ' + response.message + ''
                                         })
                                     });
                                 },
                                 error: function (error) {
-                                    $(function() {
+                                    $(function () {
                                         Toast.fire({
                                             type: 'error',
-                                            title: '&nbsp; '+error.message+''
+                                            title: '&nbsp; ' + error.message + ''
                                         })
                                     });
                                 }
                             });
-                        };
+                        }
+                        ;
                     });
                 }
             })
         }
-        $('.CLEAR').click(function() {
+        $('.CLEAR').click(function () {
             swalWithBootstrapButtons.fire({
                 title: 'Are you sure ?',
                 text: "You want to remove all items from this Cart ??",
@@ -724,7 +794,7 @@
                     $.ajax({
                         url: "{{ route('pos.cart.clear') }}",
                         type: 'GET',
-                        success: function (data){
+                        success: function (data) {
                             // location.reload();
                             $("#CartExample").load(location + " #CartExample");
                             $('.TQTY').val(0);
@@ -736,21 +806,24 @@
                             $('.RETURN').val(0);
                             $('.VAT').val(0);
                             $('.BILL').html(0);
-                            $(function() {
+                            $(function () {
                                 Toast.fire({
                                     type: 'success',
-                                    title: '&nbsp; '+data.message+'',
+                                    title: '&nbsp; ' + data.message + '',
                                 })
                             });
                         }
                     });
                 } else if (
                     result.dismiss === Swal.DismissReason.cancel
-                ) { swalWithBootstrapButtons.fire(
-                    ' Canceled ',
-                    ' Items from Cart. ',
-                    'error'
-                )};
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        ' Canceled ',
+                        ' Items from Cart. ',
+                        'error'
+                    )
+                }
+                ;
             });
         });
     </script>

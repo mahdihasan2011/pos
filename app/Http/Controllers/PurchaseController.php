@@ -8,6 +8,7 @@ use App\Model\Purchase;
 use App\Model\PurchaseItem;
 use App\Model\Setting;
 use App\Model\Supplier;
+use App\Model\DiscountType;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,9 +35,10 @@ class PurchaseController extends Controller
         $tQty       = $carts->sum('quantity');
         $subTotal   = $carts->sum('total');
         $title      = "Purchase Terminal";
+        $discount_type = DiscountType::orderBy('id', 'DESC')->where('ctype', '=', 'Supplier')->get();
         Session::forget('purchase_no');
         return view('backend.Pos.purchase',
-            compact('invoice_no','today','products','users','carts','tQty','subTotal','title'));
+            compact('invoice_no','today','products','users','carts','tQty','subTotal','title','discount_type'));
     }
 
     public function supplier_store(Request $request)
@@ -232,7 +234,7 @@ class PurchaseController extends Controller
         $serial     = $last_id + 1;
         $invoice_no = $initial . $date->format('ymd') . $serial;
         $data                   = new Purchase();
-        $data->purchase_no      = $request->invoice_no ? $request->invoice_no : $invoice_no;
+        $data->purchase_no      = $invoice_no;
         $data->supplier         = !empty($request->supplier) ? $request->supplier : 'Cash';
         $data->date             = $request->date ? $request->date : $today;
         $data->amount           = $request->amount;
@@ -272,7 +274,7 @@ class PurchaseController extends Controller
                     DB::table('purchase_items')->insert([
                         'name'          => $item->name,
                         'product_id'    => $item->product_id,
-                        'purchase_no'   => $request->invoice_no ? $request->invoice_no : $invoice_no,
+                        'purchase_no'   => $invoice_no,
                         'date'          => $request->date ? $request->date : $today,
                         'cost'          => $item->price,
                         'quantity'      => $item->quantity,
@@ -283,6 +285,7 @@ class PurchaseController extends Controller
                         'quantity'      => $item->quantity,
                         'cost'          => $item->price,
                         'price'         => $item->sale_price,
+                        'status'        => 1,
                     );
                     $exist = DB::table('stocks')->where('product_id', $item->product_id)->first();
 //                    if ($exist == null)//if doesn't exist: create

@@ -123,7 +123,7 @@
                                             <option id="2" value="2">Tk</option>
                                         </select>
                                     </div>
-                                    <div class="text-left form-control-sm">Vat Amount ({{ $vat }}%) : </div>
+                                    <div class="text-left form-control-sm">Vat Amount ({{ $settings->vat_percentage }}%) : </div>
                                     <input class="text-right form-control form-control-sm VAT" value="0" name="vat" readonly>
                                     <div class="text-left form-control-sm">Payable Amount (‎৳) : </div>
                                     <input class="text-right form-control form-control-sm PAY BHid" value="0" name="payable" readonly>
@@ -209,12 +209,11 @@
                                 <label for="category" class="col-sm-2 col-form-sm-label">Category</label>
                                 <div class="col-sm-10">
                                     <select class="form-control form-control-sm category" name="category"
-                                            id="category" title="Select Customer Category">
-                                        <option value="Normal">Normal (Blue)</option>
-                                        <option value="Vip">Vip (Yellow)</option>
-                                        <option value="Special">Special (Orange)</option>
-                                        <option value="Blocked">Blocked (Red)</option>
-                                    </select>
+                                    id="category" title="Select Supplier Category">
+                                    @foreach($discount_type as $discount)
+                                        <option value="{{ $discount->name }}">{{ $discount->name }}</option>
+                                    @endforeach
+                                </select>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -523,7 +522,7 @@
                 }
             });
         });
-        $(".DISCTYPE").on('change', function () {
+        $(".DISCTYPE").on('change click', function () {
             var id  = $(".DISC").val();
             var dty = $(this).val();
             $.ajax({
@@ -579,12 +578,12 @@
                 success: function (response) {
                     $('.DUE').val(response.due.toFixed(2));
                     $('.RETURN').val(response.return.toFixed(2));
-                    $(function() {
-                        Toast.fire({
-                            type: 'success',
-                            title: '&nbsp; '+response.message+''
-                        })
-                    });
+                    // $(function() {
+                    //     Toast.fire({
+                    //         type: 'success',
+                    //         title: '&nbsp; '+response.message+''
+                    //     })
+                    // });
                 }
             });
         });

@@ -58,7 +58,6 @@ class PurchaseController extends Controller
                                 ->whereBetween('date', [$startDate, $endDate])
                                 ->get();
         } elseif ($request->supplier) {
-        dd($supplier);
             $purchases  = Purchase::orderBy('id', 'DESC')
                                 ->leftJoin('suppliers','purchases.supplier','suppliers.id')
                                 ->select('purchases.*','suppliers.name as supplier')

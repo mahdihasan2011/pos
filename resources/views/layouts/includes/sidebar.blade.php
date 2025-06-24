@@ -243,6 +243,15 @@
                                     </a>
                                 </li>
                             @endcan
+                            @can('discount_type')
+                                <li class="nav-item">
+                                    <a href="{{ route('discount.type.index') }}" class="nav-link {{ ( $controller ==
+                                    'DiscountTypeController' ) ? 'active' : '' }}">
+                                        <i class="fas fa-hand-holding-usd nav-icon"></i>
+                                        <p>Discount Type</p>
+                                    </a>
+                                </li>
+                            @endcan
                             @can('user_role_list')
                             <li class="nav-item">
                                 <a href="{{ route('user.role.index') }}"
@@ -273,9 +282,10 @@
                         </ul>
                     </li>
                     @endcanany
-                    @canany(['purchase_report', 'sale_report'])
+                    @canany(['purchase_report','sale_report','stock_report'])
                     <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link {{ ( $controller == 'Reports\PurchaseController' || $controller == 'Reports\SaleController' ) ? 'active' : '' }}">
+                        <a href="#" class="nav-link {{ ( $controller == 'Reports\PurchaseController' || $controller
+                        == 'Reports\SaleController' || $controller == 'Reports\StockController' ) ? 'active' : '' }}">
                             <i class="nav-icon fas fa-print"></i>
                             <p>Report Management
                                 <i class="fas fa-angle-left right"></i>
@@ -315,8 +325,25 @@
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
                                         <a href="{{ route('sales.report.datewise') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
+                                            <i class="fas fa-circle nav-icon"></i>
                                             <p>Datewise</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            @endcan
+                            @can('stock_report')
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-circle"></i>
+                                    <p>Stock</p>
+                                    <i class="fas fa-angle-left right"></i>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ url('current-stock-report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Current</p>
                                         </a>
                                     </li>
                                 </ul>

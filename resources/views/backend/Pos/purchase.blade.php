@@ -224,11 +224,10 @@
                             <label for="category" class="col-sm-2 col-form-sm-label">Category</label>
                             <div class="col-sm-10">
                                 <select class="form-control form-control-sm category" name="category"
-                                        id="category" title="Select Supplier Category">
-                                    <option value="Normal">Normal (Blue)</option>
-                                    <option value="Vip">Vip (Yellow)</option>
-                                    <option value="Special">Special (Orange)</option>
-                                    <option value="Blocked">Blocked (Red)</option>
+                                    id="category" title="Select Supplier Category">
+                                    @foreach($discount_type as $discount)
+                                        <option value="{{ $discount->name }}">{{ $discount->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>

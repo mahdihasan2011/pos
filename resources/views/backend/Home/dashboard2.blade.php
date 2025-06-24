@@ -87,7 +87,7 @@
               <div class="inner">
                 <h5>Tk. <b>{{ $this_month_sale }}</b>
               </h5>
-                <p>{{ $thisMonth }} Sale Amount</p>
+                <p>{{ $thisMonth }} Total Sale Amount</p>
               </div>
               <div class="icon">
                 <i class="fas fa-cart-arrow-down"></i>
@@ -98,10 +98,9 @@
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-gradient-orange">
+            <div class="small-box bg-gradient-lightblue">
               <div class="inner">
-                <h5>Tk. <b>{{ $today_expense }}</b><br>
-                </h5>
+                <h5>Tk. <b>{{ $today_expense }}</b><br></h5>
                 <p>Today Expense Amount</p>
               </div>
               <div class="icon">
@@ -113,11 +112,11 @@
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-gradient-success">
+            <div class="small-box bg-gradient-teal">
               <div class="inner">
-                <h5>Tk. <b>000</b><br>
+                <h5>Tk. <b>{{ $this_month_expense }}</b><br>
                 </h5>
-                <p>Gross Profit</p>
+                <p>{{ $thisMonth }} Total Expenses</p>
               </div>
               <div class="icon">
                 <i class="fa fa-taka">৳</i>
@@ -127,60 +126,101 @@
               </a>
             </div>
           </div>
-
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                {{-- <div class="col-lg-6 col-6">
+                    <div class="small-box bg-gradient-green">
+                        <div class="inner">
+                            <h5>Tk. <b>000</b><br>
+                            </h5>
+                            <p>Net Profit</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-taka">৳</i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            View Details <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div> --}}
+                {{-- <div class="col-lg-6 col-6">
+                    <div class="small-box bg-gradient-success">
+                        <div class="inner">
+                            <h5>Tk. <b>000</b><br>
+                            </h5>
+                            <p>Gross Profit</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-taka">৳</i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            View Details <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div> --}}
+                <div class="col-md-12">
+                    <div class="card collapsed-card">
+                        <div class="card-header border-transparent">
+                            <h3 class="card-title">Latest Sales Items</h3>
+                            <div class="card-tools">
+                                {{-- <div class="card-tools pagination pagination-sm"> --}}
+                                {{-- {{ $latest_items->links() }} --}}
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                    <tr>
+                                        <th>SL.</th>
+                                        <th>Description</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-right">Price&nbsp;(Tk.)</th>
+                                        <th class="text-right">Total&nbsp;(Tk.)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <?php $i = 1; ?>
+                                    @foreach ($latest_items as $data)
+                                        <tr>
+                                            <td>{{ $i++ }}.</td>
+                                            <td>{{ $data->name }} ({{ $data->code }})</td>
+                                            <td class="text-center">{{ $data->MostSold }}</td>
+                                            <td class="text-right">{{ $data->price }}</td>
+                                            <td class="text-right">{{ $data->MostSold * $data->price }}</td>
+                                        </tr>
+                                        @endforeach
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer clearfix">
+                            <a href="{{ route('sales.report.datewise') }}" class="btn btn-sm btn-primary float-right">View All</a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div id="pie_chart"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="row">
-
-          <div class="col-md-6">
-            <div class="card collapsed-card">
-              <div class="card-header border-transparent">
-                <h3 class="card-title">Latest Sales Items</h3>
-                <div class="card-tools">
-                  {{-- <div class="card-tools pagination pagination-sm"> --}}
-                    {{-- {{ $latest_items->links() }} --}}
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                      <i class="fas fa-plus"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                      <i class="fas fa-times"></i>
-                    </button>
-                </div>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table m-0">
-                    <thead>
-                    <tr>
-                      <th>SL.</th>
-                      <th>Description</th>
-                      <th class="text-center">Quantity</th>
-                      <th class="text-right">Price&nbsp;(Tk.)</th>
-                      <th class="text-right">Total&nbsp;(Tk.)</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <?php $i = 1; ?>
-                      @foreach ($latest_items as $data)
-                      <tr>
-                        <td>{{ $i++ }}.</td>
-                        <td>{{ $data->name }} ({{ $data->code }})</td>
-                        <td class="text-center">{{ $data->MostSold }}</td>
-                        <td class="text-right">{{ $data->price }}</td>
-                        <td class="text-right">{{ $data->MostSold * $data->price }}</td>
-                      </tr>
-                      @endforeach
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="card-footer clearfix">
-                <a href="{{ route('sales.report.datewise') }}" class="btn btn-sm btn-primary float-right">View All</a>
-              </div>
-            </div>
-          </div>
             <div class="col-md-12">
                 <div class="card">
 <!--                    <div class="card-header border-transparent">
@@ -208,13 +248,94 @@
 </div>
 @endsection
 @section('customJs')
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-    <script src="https://code.highcharts.com/modules/data.js"></script>
-    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
     <script>
+        /*$(function() {
+            categories: [
+                @foreach ($latest_items as $data)
+                    {{ $data->name }},
+                @endforeach
+            ];
+            value: [
+                @foreach ($latest_items as $data)
+                    {{ $data->MostSold }},
+                @endforeach
+            ],
+            resultData = [],
+            i,
+            dataLen = value.length;
+
+            for (i = 0; i < dataLen; i += 1) {
+                resultData.push({
+                    name: categories[i],
+                    y: value[i].y,
+                    // color: data[i].color
+                });
+            }
+        });*/
+        Highcharts.chart('pie_chart', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Sale quantity wise product percentage'
+            },
+            subtitle: {
+                // text: 'Click the slices to view types of service status.'
+            },
+
+            credits: {
+                enabled: false
+            },
+
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                },
+                point: {
+                    valueSuffix: ''
+                }
+            },
+
+            plotOptions: {
+                series: {
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.name}: {point.percentage:.0f}%'
+                    },
+                    pie: {
+                        shadow: false,
+                        center: ['50%', '50%'],
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: false
+                        },
+                        showInLegend: true
+                    }
+                },
+            },
+
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.percentage:.0f}%</b> of total<br/>'
+            },
+
+            series: [
+                {
+                    name: "Sale Quantity",
+                    colorByPoint: true,
+                    innerSize: '50%',
+                    data: [
+                        @foreach ($latest_items as $data)
+                            {{ $data->MostSold }},
+                        @endforeach
+                    ],
+                }
+            ],
+        });
         Highcharts.chart('container', {
             chart: {
                 type: 'column'

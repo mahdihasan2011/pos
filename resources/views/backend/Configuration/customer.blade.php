@@ -129,10 +129,9 @@
                                 <div class="col-sm-10">
                                     <select class="form-control form-control-sm category" name="category"
                                         id="category" title="Select Customer Category">
-                                        <option value="Normal">Normal (Blue)</option>
-                                        <option value="Vip">Vip (Yellow)</option>
-                                        <option value="Special">Special (Orange)</option>
-                                        <option value="Blocked">Blocked (Red)</option>
+                                        @foreach($discount_type as $discount)
+                                        <option value="{{ $discount->name }}">{{ $discount->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>

@@ -20,6 +20,7 @@ class CreateStocksTable extends Migration
             $table->integer('quantity')->nullable();
             $table->double('cost', 10,2)->nullable();
             $table->double('price', 10,2)->nullable();
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
     }

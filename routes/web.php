@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Reports\StockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -142,7 +143,8 @@ Route::prefix('point-of-sale/')->name('pos.')->group(function () {
     Route::get('/', 'PoSController@pos')->name('point_of_sale');
     Route::get('product-search', 'PoSController@product_search')->name('product.search');
     Route::get('product-add', 'PoSController@product_add')->name('product.add');
-    Route::get('customer-details', 'PoSController@customer_details')->name('customer.details');
+    Route::get('customer-discount', 'PoSController@customer_discount')->name('customer.discount');
+    Route::get('cash-discount', 'PoSController@cash_discount')->name('cash.discount');
     Route::post('customer-store', 'PoSController@customer_store')->name('customer.store');
     Route::get('item-add', 'PoSController@item_add')->name('item.add');
     Route::get('item/remove/{id}', 'PoSController@item_remove')->name('item.remove');
@@ -183,6 +185,10 @@ Route::prefix('sales-report/')->name('sales.report.')->group(function () {
     Route::get('invoice', 'Reports\SaleController@mini_invoice')->name('mini.invoice');
 
 });
+///Stock
+Route::get('current-stock-report', [StockController::class, 'index']);
+Route::get('current-stock-report-print', [StockController::class, 'current_print']);
+//---------------------------- End Report ---------------------------
 
 //----------------------------- User-Role ----------------------------
 Route::prefix('user-role/')->name('user.')->group(function () {
@@ -235,4 +241,13 @@ Route::prefix('expense-type/')->name('expense.type.')->group(function () {
     Route::get('edit', 'ExpenseTypeController@edit')->name('edit');
     Route::post('update', 'ExpenseTypeController@update')->name('update');
     Route::get('destroy', 'ExpenseTypeController@destroy')->name('destroy');
+});
+
+//-------------------------- Discount Type -------------------------
+Route::prefix('discount-type/')->name('discount.type.')->group(function () {
+    Route::get('index', 'DiscountTypeController@index')->name('index');
+    Route::post('store', 'DiscountTypeController@store')->name('store');
+    Route::get('edit', 'DiscountTypeController@edit')->name('edit');
+    Route::post('update', 'DiscountTypeController@update')->name('update');
+    Route::get('destroy', 'DiscountTypeController@destroy')->name('destroy');
 });

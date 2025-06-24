@@ -60,7 +60,7 @@
                                     <th class="text-center">Quantity</th>
                                     <th class="text-right">SubTotal (Tk.)</th>
                                     <th class="text-right">Discount</th>
-                                    <th class="text-right">Vat ({{ $vat }}%) (Tk.)</th>
+                                    <th class="text-right">Vat (Tk.)</th>
                                     <th class="text-right">Payable (Tk.)</th>
                                     <th class="text-center">Action</th>
                                 </tr>
