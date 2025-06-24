@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Reports\StockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -142,6 +143,27 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 //     Route::get('invoice', 'PurchaseController@mini_invoice')->name('mini.invoice');
 // });
 
+<<<<<<< HEAD
+//-------------------------- Pos -------------------------
+Route::prefix('point-of-sale/')->name('pos.')->group(function () {
+    Route::get('/', 'PoSController@pos')->name('point_of_sale');
+    Route::get('product-search', 'PoSController@product_search')->name('product.search');
+    Route::get('product-add', 'PoSController@product_add')->name('product.add');
+    Route::get('customer-discount', 'PoSController@customer_discount')->name('customer.discount');
+    Route::get('cash-discount', 'PoSController@cash_discount')->name('cash.discount');
+    Route::post('customer-store', 'PoSController@customer_store')->name('customer.store');
+    Route::get('item-add', 'PoSController@item_add')->name('item.add');
+    Route::get('item/remove/{id}', 'PoSController@item_remove')->name('item.remove');
+    Route::get('cart-clear', 'PoSController@cart_clear')->name('cart.clear');
+    Route::get('item-quantity', 'PoSController@item_quantity')->name('item.quantity');
+    Route::get('item-price', 'PoSController@item_price')->name('item.price');
+    Route::get('discount', 'PoSController@discount')->name('discount');
+    Route::get('discount-type', 'PoSController@discount_type')->name('discount.type');
+    Route::get('paid-amount', 'PoSController@paid_amount')->name('paid.amount');
+    Route::post('item-store', 'PoSController@item_store')->name('item.store');
+    Route::get('invoice', 'PoSController@mini_invoice')->name('mini.invoice');
+});
+=======
 // //-------------------------- Pos -------------------------
 // Route::prefix('point-of-sale/')->name('pos.')->group(function () {
 //     Route::get('/', 'PoSController@pos')->name('point_of_sale');
@@ -161,6 +183,7 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 //     Route::post('item-store', 'PoSController@item_store')->name('item.store');
 //     Route::get('invoice', 'PoSController@mini_invoice')->name('mini.invoice');
 // });
+>>>>>>> 2336420b8234ba70f077e942e6130343c437d171
 
 // //-------------------------- Stock -------------------------
 // Route::prefix('stock/')->name('stock.')->group(function () {
@@ -188,10 +211,17 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 //     Route::get('Invoice-print', 'Reports\SaleController@bigInvoicePrint')->name('invoice.print');
 //     Route::get('invoice', 'Reports\SaleController@mini_invoice')->name('mini.invoice');
 
+<<<<<<< HEAD
+});
+///Stock
+Route::get('current-stock-report', [StockController::class, 'index']);
+Route::get('current-stock-report-print', [StockController::class, 'current_print']);
+=======
 // });
 // ///Stock
 // Route::get('current-stock-report', [StockController::class, 'index']);
 // Route::get('current-stock-report-print', [StockController::class, 'current_print']);
+>>>>>>> 2336420b8234ba70f077e942e6130343c437d171
 //---------------------------- End Report ---------------------------
 
 //----------------------------- User-Role ----------------------------
@@ -238,6 +268,25 @@ Route::post('/image-upload', 'UserController@image_upload')->name('image.upload'
 //     Route::get('destroy', 'ExpenseController@destroy')->name('destroy');
 // });
 
+<<<<<<< HEAD
+//-------------------------- Expense Type -------------------------
+Route::prefix('expense-type/')->name('expense.type.')->group(function () {
+    Route::get('index', 'ExpenseTypeController@index')->name('index');
+    Route::post('store', 'ExpenseTypeController@store')->name('store');
+    Route::get('edit', 'ExpenseTypeController@edit')->name('edit');
+    Route::post('update', 'ExpenseTypeController@update')->name('update');
+    Route::get('destroy', 'ExpenseTypeController@destroy')->name('destroy');
+});
+
+//-------------------------- Discount Type -------------------------
+Route::prefix('discount-type/')->name('discount.type.')->group(function () {
+    Route::get('index', 'DiscountTypeController@index')->name('index');
+    Route::post('store', 'DiscountTypeController@store')->name('store');
+    Route::get('edit', 'DiscountTypeController@edit')->name('edit');
+    Route::post('update', 'DiscountTypeController@update')->name('update');
+    Route::get('destroy', 'DiscountTypeController@destroy')->name('destroy');
+});
+=======
 // //-------------------------- Expense Type -------------------------
 // Route::prefix('expense-type/')->name('expense.type.')->group(function () {
 //     Route::get('index', 'ExpenseTypeController@index')->name('index');
@@ -255,3 +304,4 @@ Route::post('/image-upload', 'UserController@image_upload')->name('image.upload'
 //     Route::post('update', 'DiscountTypeController@update')->name('update');
 //     Route::get('destroy', 'DiscountTypeController@destroy')->name('destroy');
 // });
+>>>>>>> 2336420b8234ba70f077e942e6130343c437d171
