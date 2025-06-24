@@ -10,7 +10,7 @@
 <!--===============================================================================================-->
 <link rel="stylesheet" type="text/css" href="{{ asset('public/login') }}/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
 <!-- Ekko Lightbox -->
-<link rel="stylesheet" href="{{ asset('public/login') }}/plugins/ekko-lightbox/ekko-lightbox.css">
+{{-- <link rel="stylesheet" href="{{ asset('public/login') }}/plugins/ekko-lightbox/ekko-lightbox.css"> --}}
 <!--===============================================================================================-->
 <link rel="stylesheet" type="text/css" href="{{ asset('public/login') }}/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
 <!--===============================================================================================-->

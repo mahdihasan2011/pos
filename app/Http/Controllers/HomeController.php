@@ -33,7 +33,7 @@ class HomeController extends Controller
     {
         if (Auth::check()) {
             // return view('backend.Home.home');
-       return redirect('/dashboard');
+            return redirect('/dashboard');
         } else {
             return redirect('/login');
         }

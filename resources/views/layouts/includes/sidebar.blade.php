@@ -56,7 +56,7 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="{{ route('pos.point_of_sale') }}" class="nav-link {{ ( $controller ==
+                                <a href="{{ route('pos.terminal') }}" class="nav-link {{ ( $controller ==
                                 'PoSController' && $action == 'pos' ) ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Sales</p>
