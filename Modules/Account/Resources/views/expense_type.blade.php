@@ -1,1 +1,1 @@
-@include('backend.Accounts.expense')
+@include('backend.Accounts.expense_type')

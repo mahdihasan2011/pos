@@ -155,10 +155,10 @@
                                 <input name="sale_price" class="sale_price form-control form-control-sm"
                                        type="text" placeholder="Sale Price" required>
                             </div>
-                            <div class="col-lg-9 form-group">
+                            {{-- <div class="col-lg-9 form-group">
                                 <label for="image">Product Image</label>
                                 <input name="image" type="file" class="form-control form-control-sm">
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="modal-footer justify-content-center">

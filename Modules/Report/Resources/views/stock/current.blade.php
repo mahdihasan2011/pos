@@ -11,7 +11,7 @@
                             <h3 class="card-title">
                                 {{ __('Stock Report') }} <small>( {{ __('Current') }} )</small>
                             </h3>
-                            <form action="{{ url('current-stock-report-print') }}" method="GET" target="_blank">
+                            <form action="{{ route('stock.report.current.print') }}" method="GET" target="_blank">
                                 @csrf
                                 <button class="btn btn-info float-right" type="submit">
                                     <i class="fas fa-print"></i>

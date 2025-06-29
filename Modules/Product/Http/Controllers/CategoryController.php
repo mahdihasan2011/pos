@@ -4,6 +4,7 @@ namespace Modules\Product\Http\Controllers;
 
 use App\Model\Category;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class CategoryController extends Controller
 {

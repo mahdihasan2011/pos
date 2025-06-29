@@ -1,6 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Merchant\Http\Controllers\MerchantController;
+use Modules\Merchant\Http\Controllers\CustomerController;
+use Modules\Merchant\Http\Controllers\SupplierController;
+use Modules\Merchant\Http\Controllers\CompanyController;
+
+//-------------------------- Stock Report -------------------------
 
 /*
 |--------------------------------------------------------------------------

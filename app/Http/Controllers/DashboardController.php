@@ -15,8 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
-class DashboardController extends Controller
-{
+class DashboardController extends Controller {
     public function __construct()
     {
         $this->middleware('auth');
@@ -24,10 +23,10 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $date  = new DateTime("now");
+        $date = new DateTime("now");
         $today = $date->format('Y-m-d');
         $thisMonth = $date->format('F');
-        $sales_due  = Sale::sum('due');
+        $sales_due = Sale::sum('due');
         $purchase_due = Purchase::sum('due');
         $customers = Customer::count();
         $suppliers = Supplier::count();
@@ -44,10 +43,10 @@ class DashboardController extends Controller
         $today_purchase = $purchases->sum('payable');
 
         $current_st = Stock::orderBy('id', 'DESC')
-                        ->leftJoin('products', 'stocks.product_id', 'products.id')
-                        ->select('stocks.*','products.code')
-                        ->limit(5)
-                        ->get();
+            ->leftJoin('products', 'stocks.product_id', 'products.id')
+            ->select('stocks.*', 'products.code')
+            ->limit(5)
+            ->get();
         $tQty = $current_st->sum('quantity');
         $tCst = $current_st->sum('cost');
         $tPrc = $current_st->sum('price');
@@ -56,15 +55,16 @@ class DashboardController extends Controller
         $collection = collect($saletems);
         $ids = SaleItem::all();
         $id = [];
-        foreach ($ids as $item) {
+        foreach ($ids as $item)
+        {
             $id[] = $item->product_id;
         }
         $latest_items = $collection->whereIn('product_id', $id);
 
-//        $startMonth = Carbon::now()->month($date->format('m'))->startOfMonth()->format("Y-m-d");
+        //        $startMonth = Carbon::now()->month($date->format('m'))->startOfMonth()->format("Y-m-d");
 //        $endMonth = Carbon::now()->month($date->format('m'))->endOfMonth()->format("Y-m-d");
 
-//        $begin = new DateTime( $startMonth);
+        //        $begin = new DateTime( $startMonth);
 //        $end   = new DateTime( $endMonth );
 //        for($i = $begin; $i <= $end; $i->modify('+1 day')){
 //            $i->format("d");
@@ -77,19 +77,26 @@ class DashboardController extends Controller
 
         $daysCount = Carbon::createFromDate($date->format('Y'), $date->format('m'), 1)->daysInMonth;
         $salesData = Sale::selectRaw("COUNT(*) as count, payable, DATE_FORMAT(date, '%d') as date")
-            ->whereBetween('date', [Carbon::createFromDate($date->format('Y'), $date->format('m'), 1),
-                Carbon::createFromDate($date->format('Y'), $date->format('m'), $daysCount)])
-            ->groupBy('payable','date')
+            ->whereBetween('date', [
+                Carbon::createFromDate($date->format('Y'), $date->format('m'), 1),
+                Carbon::createFromDate($date->format('Y'), $date->format('m'), $daysCount)
+            ])
+            ->groupBy('payable', 'date')
             ->get();
         $purchaseData = Purchase::selectRaw("COUNT(*) as count, payable, DATE_FORMAT(date, '%d') as date")
-            ->whereBetween('date', [Carbon::createFromDate($date->format('Y'), $date->format('m'), 1),
-                Carbon::createFromDate($date->format('Y'), $date->format('m'), $daysCount)])
-            ->groupBy('payable','date')
+            ->whereBetween('date', [
+                Carbon::createFromDate($date->format('Y'), $date->format('m'), 1),
+                Carbon::createFromDate($date->format('Y'), $date->format('m'), $daysCount)
+            ])
+            ->groupBy('payable', 'date')
             ->get();
         $today_expense = Expense::where('date', $today)->sum('amount');
-        $this_month_expense = Expense::whereBetween('date', [Carbon::createFromDate($date->format('Y'), $date->format
-        ('m'), 1), Carbon::createFromDate($date->format('Y'), $date->format('m'), $daysCount)])->sum('amount');
-        return view('backend.Home.dashboard2', compact('sales_due','purchase_due','customers','suppliers','today_sales_count','today_sales_qty','today_sales','today_purchase_count','today_purchase_qty','today_purchase','current_st','tQty','tCst','tPrc','latest_items','this_month_sale','thisMonth','salesData','purchaseData','today_expense','this_month_expense'));
+        $this_month_expense = Expense::whereBetween('date', [
+            Carbon::createFromDate($date->format('Y'), $date->format
+            ('m'), 1),
+            Carbon::createFromDate($date->format('Y'), $date->format('m'), $daysCount)
+        ])->sum('amount');
+        return view('backend.Home.dashboard2', compact('sales_due', 'purchase_due', 'customers', 'suppliers', 'today_sales_count', 'today_sales_qty', 'today_sales', 'today_purchase_count', 'today_purchase_qty', 'today_purchase', 'current_st', 'tQty', 'tCst', 'tPrc', 'latest_items', 'this_month_sale', 'thisMonth', 'salesData', 'purchaseData', 'today_expense', 'this_month_expense'));
     }
 
 }

@@ -112,21 +112,19 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                // url = url.replace(':id',id);
                 url:  "{{ route('profile.image') }}",
-                // url:  '{{ route("profile.image", ":id") }}',
-                // url: "{{ url('profile/image') }}" + '/' + id,
-                // url: "{{ route('profile.image', ['user_id' => "user_id"]) }}",
-                type: "POST",
-                timeout: 7000,
-                onload: (response) => {
-                    alert(response);
-                    location.reload();
-                },
-                // data: { user_id : user_id },
-                // success: function (data) {
+                // type: "POST",
+                // timeout: 7000,
+                // onload: (response) => {
+                //     console.log(response);
                 //     location.reload();
-                // }
+                // },
+                process: {
+                    method: 'POST',
+                    onload: response => {
+                        location.reload();
+                    }
+                }
             }
         });
     });

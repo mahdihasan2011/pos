@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Modules\Report\Http\Controllers\StockController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,7 +36,7 @@ Route::prefix('report/sales/')->name('sales.report.')->group(function () {
 
 });
 ///Stock
-Route::prefix('report/stock/')->group(function () {
-    Route::get('current', [StockController::class, 'index']);
-    Route::get('current-print', [StockController::class, 'current_print']);
+Route::prefix('report/stock/')->name('stock.report.')->group(function () {
+    Route::get('current', [StockController::class, 'index'])->name('current');
+    Route::get('current-print', [StockController::class, 'current_print'])->name('current.print');
 });

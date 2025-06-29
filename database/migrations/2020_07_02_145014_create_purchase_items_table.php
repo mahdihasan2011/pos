@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePurchaseItemsTable extends Migration
-{
+class CreatePurchaseItemsTable extends Migration {
     /**
      * Run the migrations.
      *
@@ -13,15 +12,17 @@ class CreatePurchaseItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_items', function (Blueprint $table) {
+        Schema::create('purchase_items', function (Blueprint $table)
+        {
             $table->id();
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->string('purchase_no');
             $table->dateTime('date')->nullable();
             $table->string('name')->nullable();
             $table->string('code')->nullable();
-            $table->double('cost', 10,2)->nullable();
+            $table->double('cost', 10, 2)->nullable();
             $table->integer('quantity')->nullable();
-            $table->double('total', 10,2)->nullable();
+            $table->double('total', 10, 2)->nullable();
             $table->timestamps();
         });
     }

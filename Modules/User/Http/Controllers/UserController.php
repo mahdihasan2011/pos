@@ -12,8 +12,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Model\User;
 
-class UserController extends Controller
-{
+class UserController extends Controller {
     public function __construct()
     {
         $this->middleware('auth');
@@ -21,14 +20,14 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $role = Role::orderBy('id','DESC')->where('name', '!=', 'superadmin')->get();
+        $role = Role::orderBy('id', 'DESC')->where('name', '!=', 'superadmin')->get();
         $user = DB::table('users')
-                    ->leftJoin('model_has_roles','users.id','model_has_roles.model_id')
-                    ->leftJoin('roles','model_has_roles.role_id','roles.id')
-                    ->select('users.*','roles.name as role','roles.display_name as role_name')
-                    ->orderBy('id','DESC')
-                    ->get();
-        return view('backend.Setup.user_role',compact('user','role'));
+            ->leftJoin('model_has_roles', 'users.id', 'model_has_roles.model_id')
+            ->leftJoin('roles', 'model_has_roles.role_id', 'roles.id')
+            ->select('users.*', 'roles.name as role', 'roles.display_name as role_name')
+            ->orderBy('id', 'DESC')
+            ->get();
+        return view('backend.Setup.user_role', compact('user', 'role'));
     }
 
     public function add(Request $request)
@@ -42,13 +41,14 @@ class UserController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-                'role'      => 'required',
-                'name'      => 'required|string|max:255',
-                'email'     => 'required|email|max:255|unique:users',
-                'password'  => 'required|string|min:6|max:255|confirmed'
+                'role' => 'required',
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users',
+                'password' => 'required|string|min:6|max:255|confirmed'
             ],
         );
-        if($validation->passes()) {
+        if ($validation->passes())
+        {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -56,12 +56,13 @@ class UserController extends Controller
             ]);
             $user->assignRole($request->role);
             return response()->json([
-                'message'  => 'User added successfully.',
+                'message' => 'User added successfully.',
                 'type' => 'success'
             ]);
-        } else {
+        } else
+        {
             return response()->json([
-                'message'  => $validation->errors()->all(),
+                'message' => $validation->errors()->all(),
                 'type' => 'error'
             ]);
         }
@@ -85,18 +86,18 @@ class UserController extends Controller
         // $role = $roles->name;
         $id = $request->id;
         $user = DB::table('users')
-                    ->leftJoin('model_has_roles','users.id','model_has_roles.model_id')
-                    ->leftJoin('roles','model_has_roles.role_id','roles.id')
-                    ->select('users.*','roles.name as role')
-                    ->where('users.id', $id)
-                    ->first();
+            ->leftJoin('model_has_roles', 'users.id', 'model_has_roles.model_id')
+            ->leftJoin('roles', 'model_has_roles.role_id', 'roles.id')
+            ->select('users.*', 'roles.name as role')
+            ->where('users.id', $id)
+            ->first();
         $name = $user->name;
         $role = $user->role;
         return response()->json([
-                            'id'    => $id,
-                            'name'  => $name,
-                            'role'  => $role,
-                        ]);
+            'id' => $id,
+            'name' => $name,
+            'role' => $role,
+        ]);
     }
 
     public function update(Request $request)
@@ -106,8 +107,8 @@ class UserController extends Controller
         // ]);
         $id = $request->id;
         $user = User::find($id);
-        $user->update([ 'name'  =>  $request->name  ]);
-        DB::table('model_has_roles')->where('model_id',$id)->delete();
+        $user->update(['name' => $request->name]);
+        DB::table('model_has_roles')->where('model_id', $id)->delete();
         $user->assignRole($request->role);
         return response()->json('good');
     }
@@ -117,24 +118,26 @@ class UserController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-                'old_password'  => 'required|string|min:6|max:255',
-                'password'      => 'required|string|min:6|max:255|confirmed'
+                'old_password' => 'required|string|min:6|max:255',
+                'password' => 'required|string|min:6|max:255|confirmed'
             ],
             [
-                'old_password.required'=>'Old password is required.',
-                'old_password.string'=>'Old password must be characters',
-                'old_password.min'=>'Old password minimum 6 characters needed',
-                'old_password.max'=>'Old password maximum 255 characters needed',
-                'password.required'=>'Password is required.',
-                'password.string'=>'Password must be characters',
-                'password.min'=>'Password minimum 6 characters needed',
-                'password.max'=>'Password maximum 255 characters needed',
-                'password.confirmed'=>'Confirm Password must be matched',
+                'old_password.required' => 'Old password is required.',
+                'old_password.string' => 'Old password must be characters',
+                'old_password.min' => 'Old password minimum 6 characters needed',
+                'old_password.max' => 'Old password maximum 255 characters needed',
+                'password.required' => 'Password is required.',
+                'password.string' => 'Password must be characters',
+                'password.min' => 'Password minimum 6 characters needed',
+                'password.max' => 'Password maximum 255 characters needed',
+                'password.confirmed' => 'Confirm Password must be matched',
             ]
         );
-        if($validation->passes()) {
+        if ($validation->passes())
+        {
             $user = User::where($request->id)->first();
-            if(!empty($user)) {
+            if (!empty($user))
+            {
                 $user->update([
                     'password' => Hash::make($request->password)
                 ]);
@@ -142,15 +145,17 @@ class UserController extends Controller
                     'message' => 'Password changed successfully.',
                     'type' => 'success'
                 ]);
-            } else {
+            } else
+            {
                 return response()->json([
-                    'message'  => 'Password not changed',
+                    'message' => 'Password not changed',
                     'type' => 'error'
                 ]);
             }
-        } else {
+        } else
+        {
             return response()->json([
-                'message'  => $validation->errors()->all(),
+                'message' => $validation->errors()->all(),
                 'type' => 'error'
             ]);
         }
@@ -158,16 +163,17 @@ class UserController extends Controller
 
     public function image_upload(Request $request)
     {
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('image'))
+        {
             $file = $request->file('image');
             // $extension = $file->getClientOriginalExtension();
             // $file_name = $file->getClientOriginalName();
             // $origin_name = Auth::user()->name;
             // $origin_name = str_replace(' ', '_', $origin_name);
-            $file_name = uniqid().$file->getClientOriginalName();
+            $file_name = uniqid() . $file->getClientOriginalName();
             $uploadPath = 'public/uploads/';
-            $file->move($uploadPath,$file_name);
-            return $uploadPath.$file_name;
+            $file->move($uploadPath, $file_name);
+            return $uploadPath . $file_name;
         }
         return '';
         // if (!empty($request->file('file_name'))) {
@@ -224,14 +230,15 @@ class UserController extends Controller
         //         'data'  =>  'Profile Image Not Uploaded' 
         //     ]);
         // }
-        if ($request->hasFile('profile_image')) {
+        if ($request->hasFile('profile_image'))
+        {
             $file = $request->file('profile_image');
-            $file_name = uniqid().$file->getClientOriginalName();
+            $file_name = uniqid() . $file->getClientOriginalName();
             $uploadPath = 'public/profile/';
-            $file->move($uploadPath,$file_name);
-            $image = $uploadPath.$file_name;
-            User::where('id', Auth::user()->id)->update([  'image' =>  $image  ]);
-            return $image;
+            $file->move($uploadPath, $file_name);
+            $image = $uploadPath . $file_name;
+            User::where('id', Auth::user()->id)->update(['image' => $image]);
+            return response()->json(['filename' => $image]);
         }
         return '';
     }

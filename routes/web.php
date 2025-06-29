@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Reports\StockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,8 +27,8 @@ Route::get('/', function () {
         // return view('pos::index');
         // return view('auth.login');
         // return view('frontend.login');
-        return view('frontend.welcome');
-        // return redirect('/login');
+        // return view('frontend.welcome');
+        return redirect('/login');
     }
 });
 
@@ -190,8 +189,8 @@ Route::prefix('point-of-sale/')->name('pos.')->group(function () {
 //     Route::get('invoice', 'Reports\SaleController@mini_invoice')->name('mini.invoice');
 
 ///Stock
-Route::get('current-stock-report', [StockController::class, 'index']);
-Route::get('current-stock-report-print', [StockController::class, 'current_print']);
+// Route::get('current-stock-report', [StockController::class, 'index']);
+// Route::get('current-stock-report-print', [StockController::class, 'current_print']);
 //---------------------------- End Report ---------------------------
 
 //----------------------------- User-Role ----------------------------
@@ -238,20 +237,20 @@ Route::post('/image-upload', 'UserController@image_upload')->name('image.upload'
 //     Route::get('destroy', 'ExpenseController@destroy')->name('destroy');
 // });
 
-//-------------------------- Expense Type -------------------------
-Route::prefix('expense-type/')->name('expense.type.')->group(function () {
-    Route::get('index', 'ExpenseTypeController@index')->name('index');
-    Route::post('store', 'ExpenseTypeController@store')->name('store');
-    Route::get('edit', 'ExpenseTypeController@edit')->name('edit');
-    Route::post('update', 'ExpenseTypeController@update')->name('update');
-    Route::get('destroy', 'ExpenseTypeController@destroy')->name('destroy');
-});
+// //-------------------------- Expense Type -------------------------
+// Route::prefix('expense-type/')->name('expense.type.')->group(function () {
+//     Route::get('index', 'ExpenseTypeController@index')->name('index');
+//     Route::post('store', 'ExpenseTypeController@store')->name('store');
+//     Route::get('edit', 'ExpenseTypeController@edit')->name('edit');
+//     Route::post('update', 'ExpenseTypeController@update')->name('update');
+//     Route::get('destroy', 'ExpenseTypeController@destroy')->name('destroy');
+// });
 
-//-------------------------- Discount Type -------------------------
-Route::prefix('discount-type/')->name('discount.type.')->group(function () {
-    Route::get('index', 'DiscountTypeController@index')->name('index');
-    Route::post('store', 'DiscountTypeController@store')->name('store');
-    Route::get('edit', 'DiscountTypeController@edit')->name('edit');
-    Route::post('update', 'DiscountTypeController@update')->name('update');
-    Route::get('destroy', 'DiscountTypeController@destroy')->name('destroy');
-});
+// //-------------------------- Discount Type -------------------------
+// Route::prefix('discount-type/')->name('discount.type.')->group(function () {
+//     Route::get('index', 'DiscountTypeController@index')->name('index');
+//     Route::post('store', 'DiscountTypeController@store')->name('store');
+//     Route::get('edit', 'DiscountTypeController@edit')->name('edit');
+//     Route::post('update', 'DiscountTypeController@update')->name('update');
+//     Route::get('destroy', 'DiscountTypeController@destroy')->name('destroy');
+// });
