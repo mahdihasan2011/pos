@@ -1,9 +1,9 @@
 @extends('layouts.master')
 @section('title')
-    {{ !empty($title) ? $title : "POS Terminal" }}
+{{ !empty($title) ? $title : "POS Terminal" }}
 @endsection
 @section('customCSS')
-    <style></style>
+<style></style>
 @endsection
 @section('content')
 <div class="content-wrapper pb-0">
@@ -16,11 +16,12 @@
                             <div class="row">
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 form-group">
                                     Invoice&nbsp;#&nbsp;<small>{{ $invoice_no }}</small>
-                                    <input type="hidden" name="invoice_no" value="{{ $invoice_no }}"/>
+                                    <input type="hidden" name="invoice_no" value="{{ $invoice_no }}" />
                                 </div>
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 form-group">
                                     @can('purchase_date')
-                                    <input type="date" value="{{ $today }}" name="date" class="form-control form-control-sm"/>
+                                    <input type="date" value="{{ $today }}" name="date"
+                                        class="form-control form-control-sm" />
                                     @endcan
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 form-group">
@@ -31,13 +32,13 @@
                                         <option value="null">Add Supplier</option>
                                         <option value="Cash" selected>Cash</option>
                                         @foreach ($users as $data)
-                                            <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                        <option value="{{ $data->id }}">{{ $data->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-6 form-group">
-                                    <select class="select2 form-control form-control-sm"
-                                        data-live-search="true" data-style="btn-primary" name="addProduct" data-placeholder="Select Product"
+                                    <select class="select2 form-control form-control-sm" data-live-search="true"
+                                        data-style="btn-primary" name="addProduct" data-placeholder="Select Product"
                                         title="Select Product" data-toggle="tooltip" data-placement="top">
                                         <option value="">Select Product</option>
                                         @foreach ($products as $data)
@@ -66,19 +67,23 @@
                                         <tr id="product_id_{{ $data->id }}">
                                             <td class="form-control-sm">{{ $i++ }}.</td>
                                             <td>
-                                                {{ $data->name }} <!--<small>( {{ $data->code }} )</small>-->
+                                                {{ $data->name }}
+                                                <!--<small>( {{ $data->code }} )</small>-->
                                             </td>
                                             <td>
                                                 <input class="QTY form-control form-control-sm text-center" type="text"
-                                                    name="quantity" value="{{ $data->quantity }}" data-id="{{ $data->code }}"/>
+                                                    name="quantity" value="{{ $data->quantity }}"
+                                                    data-id="{{ $data->code }}" />
                                             </td>
                                             <td>
                                                 <input class="PRICE form-control form-control-sm text-right" type="text"
-                                                    name="price" value="{{ $data->price }}" data-id="{{ $data->code }}"/>
+                                                    name="price" value="{{ $data->price }}"
+                                                    data-id="{{ $data->code }}" />
                                             </td>
                                             <td class="text-right">{{ $data->total }}</td>
                                             <td class="text-right">
-                                                <a href="javascript:void(0)" data-id="{{ $data->id }}" class="DEL btn btn-danger btn-xs">
+                                                <a href="javascript:void(0)" data-id="{{ $data->id }}"
+                                                    class="DEL btn btn-danger btn-xs">
                                                     <i class="fas fa-minus-circle"></i>
                                                 </a>
                                             </td>
@@ -94,14 +99,14 @@
                                             <th class="text-right form-control-sm">Total Quantity : </th>
                                             <td>
                                                 <input class="text-center form-control form-control-sm TQTY"
-                                                    name="total_qty" value="0" readonly/>
+                                                    name="total_qty" value="0" readonly />
                                             </td>
                                         </tr>
                                         <tr>
                                             <th class="text-right form-control-sm">SubTotal (৳) : </th>
                                             <td>
                                                 <input class="text-right form-control form-control-sm SUBT"
-                                                    name="sub_total" value="0" readonly/>
+                                                    name="sub_total" value="0" readonly />
                                             </td>
                                         </tr>
                                         <tr>
@@ -110,10 +115,10 @@
                                                 <input class="text-center DISC col-xl-8 col-lg-8 col-md-8 col-sm-8
                                                     col-8 form-control form-control-sm" value="0" name="discount"
                                                     type="number" required title="Input discount amount"
-                                                    data-toggle="tooltip" data-placement="top"/>
+                                                    data-toggle="tooltip" data-placement="top" />
                                                 <select class="DISCTYPE col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4
-                                                    form-control form-control-sm" name="disc_type" title="Discount type"
-                                                    data-toggle="tooltip" data-placement="top">
+                                                    form-control form-control-sm" name="disc_type"
+                                                    title="Discount type" data-toggle="tooltip" data-placement="top">
                                                     <option id="1" value="1">%</option>
                                                     <option id="2" value="2">৳</option>
                                                 </select>
@@ -122,37 +127,38 @@
                                         <tr>
                                             <th class="text-right form-control-sm">Payable Amount (৳) : </th>
                                             <td>
-                                                <input class="text-right form-control form-control-sm PAY"
-                                                    value="0" name="payable" readonly>
+                                                <input class="text-right form-control form-control-sm PAY" value="0"
+                                                    name="payable" readonly>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th class="text-right form-control-sm">Paid Amount (৳) : </th>
                                             <td>
-                                                <input class="text-center form-control form-control-sm PAID"
-                                                    required value="" name="paid" type="number" title="Input paid amount"
-                                                    data-toggle="tooltip" data-placement="top"/>
+                                                <input class="text-center form-control form-control-sm PAID" required
+                                                    value="" name="paid" type="number" title="Input paid amount"
+                                                    data-toggle="tooltip" data-placement="top" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <th class="text-right form-control-sm">Due Amount (৳) : </th>
                                             <td>
-                                                <input class="text-right form-control form-control-sm DUE"
-                                                    value="0" name="due" readonly/>
+                                                <input class="text-right form-control form-control-sm DUE" value="0"
+                                                    name="due" readonly />
                                             </td>
                                         </tr>
                                         <tr>
                                             <th class="text-right form-control-sm">Return (৳) : </th>
                                             <td>
-                                                <input class="text-right form-control form-control-sm RETURN"
-                                                    value="0" name="return" readonly/>
+                                                <input class="text-right form-control form-control-sm RETURN" value="0"
+                                                    name="return" readonly />
                                             </td>
                                         </tr>
                                         <tr>
                                             <th class="text-right form-control-sm">Payment Type : </th>
                                             <td>
                                                 <select class="payment_type form-control form-control-sm" id="pay_type"
-                                                    name="payment_type" title="Payment Type" data-toggle="tooltip" data-placement="top">
+                                                    name="payment_type" title="Payment Type" data-toggle="tooltip"
+                                                    data-placement="top">
                                                     <option value="Cash">Cash</option>
                                                     <option value="Bkash">Bkash</option>
                                                     <option value="Rocket">Rocket</option>
@@ -166,22 +172,22 @@
                                         <tr>
                                             <td class="text-right">
                                                 <button class="btn btn-danger btn-sm CLEAR" type="button"
-                                                    title="Remove all items from cart"
-                                                    data-toggle="tooltip" data-placement="top">
+                                                    title="Remove all items from cart" data-toggle="tooltip"
+                                                    data-placement="top">
                                                     <i class="far fa-trash-alt"></i>
                                                 </button>
                                             </td>
                                             <td class="text-left">
                                                 <button class="btn btn-success btn-sm CATSAV" type="submit"
-                                                    title="Confirm Purchase"
-                                                    data-toggle="tooltip" data-placement="top">
+                                                    title="Confirm Purchase" data-toggle="tooltip" data-placement="top">
                                                     <i class="fas fa-check-circle"></i>&nbsp;<b>Confirm</b>
                                                 </button>
                                                 @if (session('purchase_no'))
-                                                    <a href="{{ route('purchase.mini.invoice',['id'=>session('purchase_no')]) }}"
-                                                        class="btn btn-info btn-sm" target="_blank" title="Print Invoice" data-toggle="tooltip" data-placement="top">
-                                                        <i class="fas fa-print"></i>
-                                                    </a>
+                                                <a href="{{ route('purchase.mini.invoice',['id'=>session('purchase_no')]) }}"
+                                                    class="btn btn-info btn-sm" target="_blank" title="Print Invoice"
+                                                    data-toggle="tooltip" data-placement="top">
+                                                    <i class="fas fa-print"></i>
+                                                </a>
                                                 @endif
                                             </td>
                                         </tr>
@@ -208,25 +214,27 @@
                     <div class="modal-body">
                         <input name="id" id="id" type="hidden">
                         <div class="form-group row">
-                            <label for="name" class="col-sm-2 col-form-sm-label">Name <span style="color:gray">*</span></label>
+                            <label for="name" class="col-sm-2 col-form-sm-label">Name <span
+                                    style="color:gray">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control form-control-sm name" name="name" id="name" placeholder="Enter {{ $controller == 'PurchaseController' ? 'Supplier' : 'Customer' }} Name Here ...">
+                                <input type="text" class="form-control form-control-sm name" name="name" id="name"
+                                    placeholder="Enter {{ $controller == 'PurchaseController' ? 'Supplier' : 'Customer' }} Name Here ...">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="phone" class="col-sm-2 col-form-sm-label">Phone</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control form-control-sm phone"
-                                   name="phone" id="phone" placeholder="Enter Supplier Phone Number Here ...">
+                                <input type="number" class="form-control form-control-sm phone" name="phone" id="phone"
+                                    placeholder="Enter Supplier Phone Number Here ...">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="category" class="col-sm-2 col-form-sm-label">Category</label>
                             <div class="col-sm-10">
-                                <select class="form-control form-control-sm category" name="category"
-                                    id="category" title="Select Supplier Category">
+                                <select class="form-control form-control-sm category" name="category" id="category"
+                                    title="Select Supplier Category">
                                     @foreach($discount_type as $discount)
-                                        <option value="{{ $discount->name }}">{{ $discount->name }}</option>
+                                    <option value="{{ $discount->name }}">{{ $discount->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -234,15 +242,15 @@
                         <div class="form-group row">
                             <label for="balance" class="col-sm-2 col-form-sm-label">Balance</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control form-control-sm balance" value="0" name="balance"
-                                       id="balance" placeholder="Enter Supplier Balance Here ...">
+                                <input type="number" class="form-control form-control-sm balance" value="0"
+                                    name="balance" id="balance" placeholder="Enter Supplier Balance Here ...">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="address" class="col-sm-2 col-form-sm-label">Address</label>
                             <div class="col-sm-10">
-                                <textarea class="form-control form-control-sm address" name="address" id="address" rows="2"
-                                    placeholder="Enter Supplier Address Here ..."></textarea>
+                                <textarea class="form-control form-control-sm address" name="address" id="address"
+                                    rows="2" placeholder="Enter Supplier Address Here ..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -258,8 +266,8 @@
 </div>
 @endsection
 @section('customJs')
-    <script type="text/javascript">
-        const Toast = Swal.mixin({
+<script type="text/javascript">
+    const Toast = Swal.mixin({
             toast: true,
             position: 'top',
             showConfirmButton: false,
@@ -339,7 +347,7 @@
                 if (result.value) {
                     $.ajax({
                         type: "GET",
-                        url: "{{ url('purchase/item/remove') }}"+'/'+id,
+                        url: "{{ route('purchase.item.remove', '') }}/" + id,
                         success: function (data) {
                             // $("#product_id_" + id).remove();
                             $("#CartExample").load(location + " #CartExample");
@@ -730,5 +738,5 @@
                 )};
             });
         });
-    </script>
+</script>
 @endsection

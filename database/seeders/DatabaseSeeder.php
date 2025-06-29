@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder {
                 'website' => 'https://example.com',
                 'address' => '123 Main St, City, Country',
                 'invoice_note' => 'Thank you for your business!',
-                'logo' => 'default-logo.png',
+                'logo' => 'public/logo/icon.png',
             ]
         );
 

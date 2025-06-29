@@ -418,7 +418,7 @@
                 if (result.value) {
                     $.ajax({
                         type: "GET",
-                        url: "{{ url('point-of-sale/item/remove') }}" + '/' + id,
+                        url: "{{ route('pos.item.remove', '') }}/" + id,
                         success: function (data) {
                             // $("#product_id_" + id).remove();
                             $("#CartExample").load(location + " #CartExample");
