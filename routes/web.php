@@ -189,7 +189,6 @@ Route::prefix('point-of-sale/')->name('pos.')->group(function () {
 //     Route::get('Invoice-print', 'Reports\SaleController@bigInvoicePrint')->name('invoice.print');
 //     Route::get('invoice', 'Reports\SaleController@mini_invoice')->name('mini.invoice');
 
-
 ///Stock
 Route::get('current-stock-report', [StockController::class, 'index']);
 Route::get('current-stock-report-print', [StockController::class, 'current_print']);
