@@ -3,12 +3,12 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\User;
+use App\Model\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
-class AdminUserSeeder extends Seeder
+class DatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,16 +17,18 @@ class AdminUserSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(PermissionSeeder::class);
+
         $user = User::create([
-                            'name' => 'System Admin',
-                            'email' => 'systemadmin@gmail.com',
-                            'password' => Hash::make('123456')
-                        ]);
+            'name' => 'System Admin',
+            'email' => 'systemadmin@gmail.com',
+            'password' => Hash::make('123456')
+        ]);
         $role = Role::create([
-                            'name' => 'superadmin',
-                            'guard_name' => 'web',
-                            'display_name' => 'System Admin'
-                        ]);
+            'name' => 'superadmin',
+            'guard_name' => 'web',
+            'display_name' => 'System Admin'
+        ]);
         $user->assignRole([$role->id]);
 
         Role::create([
