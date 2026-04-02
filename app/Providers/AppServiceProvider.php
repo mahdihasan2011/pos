@@ -46,7 +46,11 @@ class AppServiceProvider extends ServiceProvider {
                     $controller = "HomeController";
                     $action = "index";
                 }
+<<<<<<< HEAD
                 $view->with(compact('controller', 'action', 'settings', 'company'));
+=======
+                $view->with(compact('controller', 'action', 'settings'));
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
             }
         });
     }

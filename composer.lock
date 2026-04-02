@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "d3db8d93edd0599d1e8abc44a972a88b",
+=======
+    "content-hash": "2255d4cf2de2f494dcdbc55d4291dd26",
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
     "packages": [
         {
             "name": "brick/math",
@@ -569,6 +573,7 @@
         },
         {
             "name": "guzzlehttp/guzzle",
+<<<<<<< HEAD
             "version": "7.9.3",
             "source": {
                 "type": "git",
@@ -579,6 +584,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/guzzle/guzzle/zipball/7b2f29fe81dc4da0ca0ea7d42107a0845946ea77",
                 "reference": "7b2f29fe81dc4da0ca0ea7d42107a0845946ea77",
+=======
+            "version": "6.5.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "a52f0440530b54fa079ce76e8c5d196a42cad981"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/a52f0440530b54fa079ce76e8c5d196a42cad981",
+                "reference": "a52f0440530b54fa079ce76e8c5d196a42cad981",
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
                 "shasum": ""
             },
             "require": {
@@ -675,7 +692,11 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/guzzle/guzzle/tree/7.9.3"
+=======
+                "source": "https://github.com/guzzle/guzzle/tree/6.5.8"
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
             },
             "funding": [
                 {
@@ -691,7 +712,11 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
             "time": "2025-03-27T13:37:11+00:00"
+=======
+            "time": "2022-06-20T22:16:07+00:00"
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
         },
         {
             "name": "guzzlehttp/promises",
@@ -778,6 +803,7 @@
         },
         {
             "name": "guzzlehttp/psr7",
+<<<<<<< HEAD
             "version": "2.7.1",
             "source": {
                 "type": "git",
@@ -788,6 +814,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/guzzle/psr7/zipball/c2270caaabe631b3b44c85f99e5a04bbb8060d16",
                 "reference": "c2270caaabe631b3b44c85f99e5a04bbb8060d16",
+=======
+            "version": "1.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/psr7.git",
+                "reference": "e4490cabc77465aaee90b20cfc9a770f8c04be6b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/e4490cabc77465aaee90b20cfc9a770f8c04be6b",
+                "reference": "e4490cabc77465aaee90b20cfc9a770f8c04be6b",
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
                 "shasum": ""
             },
             "require": {
@@ -874,7 +912,11 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/guzzle/psr7/tree/2.7.1"
+=======
+                "source": "https://github.com/guzzle/psr7/tree/1.9.1"
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
             },
             "funding": [
                 {
@@ -890,7 +932,11 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
             "time": "2025-03-27T12:30:47+00:00"
+=======
+            "time": "2023-04-17T16:00:37+00:00"
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
         },
         {
             "name": "hardevine/shoppingcart",

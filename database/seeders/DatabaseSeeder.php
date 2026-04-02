@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+<<<<<<< HEAD
 use App\Model\Company;
 use App\Model\Role;
 use App\Model\Setting;
@@ -10,6 +11,16 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder {
+=======
+use Illuminate\Database\Seeder;
+use App\Model\User;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Hash;
+
+class DatabaseSeeder extends Seeder
+{
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
     /**
      * Run the database seeds.
      *
@@ -19,6 +30,7 @@ class DatabaseSeeder extends Seeder {
     {
         $this->call(PermissionSeeder::class);
 
+<<<<<<< HEAD
         $user = User::updateOrCreate(
             ['email' => 'systemadmin@gmail.com'],
             [
@@ -76,5 +88,29 @@ class DatabaseSeeder extends Seeder {
                 'vat_percentage' => 0,
             ]
         );
+=======
+        $user = User::create([
+            'name' => 'System Admin',
+            'email' => 'systemadmin@gmail.com',
+            'password' => Hash::make('123456')
+        ]);
+        $role = Role::create([
+            'name' => 'superadmin',
+            'guard_name' => 'web',
+            'display_name' => 'System Admin'
+        ]);
+        $user->assignRole([$role->id]);
+
+        Role::create([
+            'name' => 'admin',
+            'guard_name' => 'web',
+            'display_name' => 'Admin'
+        ]);
+        Role::create([
+            'name' => 'user',
+            'guard_name' => 'web',
+            'display_name' => 'User'
+        ]);
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
     }
 }

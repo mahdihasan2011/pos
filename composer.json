@@ -6,7 +6,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+<<<<<<< HEAD
         "guzzlehttp/guzzle": "^7.0",
+=======
+        "fideloper/proxy": "^4.2",
+        "guzzlehttp/guzzle": "^6.3",
+>>>>>>> 012275c567990345693f3debf78fbaebc3440630
         "hardevine/shoppingcart": "^2.8",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
